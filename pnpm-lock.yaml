@@ -17,6 +17,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.56.0
   antd: ^5.4.2
   autoprefixer: ^10.4.14
+  dayjs: ^1.11.7
   eslint: ^8.36.0
   eslint-config-next: ^13.2.4
   eslint-plugin-react: ^7.32.2
@@ -46,6 +47,7 @@ dependencies:
   '@trpc/react-query': 10.20.0_khoxibkk4crjzebfjva2ltse6a
   '@trpc/server': 10.20.0
   antd: 5.4.2_biqbaboplfbrettd7655fr4n2y
+  dayjs: 1.11.7
   formik: 2.2.9_react@18.2.0
   next: 13.3.0_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.22.0_yucv4tfv7v7nrkw2uguegj6e7e

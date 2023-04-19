@@ -22,19 +22,19 @@ model Example {
 
 // Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? // @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id                       String  @id @default(cuid())
+    userId                   String
+    type                     String
+    provider                 String
+    providerAccountId        String
+    refresh_token            String?  //@db.Text
+    access_token             String?  //@db.Text
+    expires_at               Int?
+    token_type               String?
+    scope                    String?
+    id_token                 String?  //@db.Text
+    session_state            String?
+    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     refresh_token_expires_in Int? // for github
 
     @@unique([provider, providerAccountId])
@@ -49,13 +49,14 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    forms         Form[]
 }
 
 model VerificationToken {
@@ -64,4 +65,52 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Form {
+    id          Int        @id @default(autoincrement())
+    title       String
+    description String?
+    user        User       @relation(fields: [userId], references: [id])
+    userId      String
+    questions   Question[]
+    responses   Response[]
+}
+
+model Question {
+    id        Int        @id @default(autoincrement())
+    text      String
+    type      String
+    order     Int
+    form      Form       @relation(fields: [formId], references: [id])
+    formId    Int
+    options   Option[]
+    logic     Logic[]
+    responses Response[]
+}
+
+model Option {
+    id         Int      @id @default(autoincrement())
+    text       String
+    question   Question @relation(fields: [questionId], references: [id])
+    questionId Int
+}
+
+model Logic {
+    id         Int      @id @default(autoincrement())
+    question   Question @relation(fields: [questionId], references: [id])
+    questionId Int
+    field      String
+    operator   String
+    value      String
+    targetId   Int
+}
+
+model Response {
+    id         Int      @id @default(autoincrement())
+    form       Form     @relation(fields: [formId], references: [id])
+    formId     Int
+    question   Question @relation(fields: [questionId], references: [id])
+    questionId Int
+    answer     String //Json
 }
