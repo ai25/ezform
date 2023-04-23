@@ -1,13 +1,10 @@
-import { Card } from "antd";
-import React from "react";
+import { Layout } from "antd";
+import React, { type ReactNode } from "react";
 
-export default function Sidebar() {
-    return <div className="flex flex-col h-full w-44 bg-red-200">
-        <Card className="flex-1">Sidebar</Card>
-        <Card className="flex-1">Sidebar</Card>
-        <Card className="flex-1">Sidebar</Card>
-        <Card className="flex-1">Sidebar</Card>
-        <Card className="flex-1">Sidebar</Card>
-        <Card className="flex-1">Sidebar</Card>
-    </div>;
-}
+const { Sider, Content } = Layout;
+
+const Sidebar: React.FC<{ children: ReactNode }> = ({ children }) => {
+    return <Sider className="p-2">{children}</Sider>;
+};
+
+export default Sidebar;

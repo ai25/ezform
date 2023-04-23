@@ -1,45 +1,33 @@
-import { type NextPage } from "next";
+import { type GetStaticProps, type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { DatePicker, Input } from "antd";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
-import { api } from "~/utils/api";
 import Dashboard from "~/components/Dashboard";
+import Sidebar from "~/components/Sidebar";
+import Workspace from "~/components/Workspace";
 
 const Home: NextPage = () => {
-    const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
     return (
-        <>
-            <Dashboard workspaceId="1" />
-        </>
+        <Dashboard>
+            <Sidebar>
+                <div className="flex h-full flex-col items-center justify-center">
+                    <h1 className="text-2xl font-bold">Welcome to Typeform</h1>
+                </div>
+            </Sidebar>
+            <Workspace id="1" />
+        </Dashboard>
     );
 };
 
 export default Home;
 
-const AuthShowcase: React.FC = () => {
-    const { data: sessionData } = useSession();
-
-    const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-        undefined, // no input
-        { enabled: sessionData?.user !== undefined },
-    );
-
-    return (
-        <div className="flex flex-col items-center justify-center gap-4">
-            <p className="text-center text-2xl text-white">
-                {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-                {secretMessage && <span> - {secretMessage}</span>}
-            </p>
-            <button
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-                onClick={sessionData ? () => void signOut() : () => void signIn()}
-            >
-                {sessionData ? "Sign out" : "Sign in"}
-            </button>
-        </div>
-    );
+export const getStaticProps: GetStaticProps = async context => {
+    const { locale } = context;
+    return {
+        props: {
+            ...(await serverSideTranslations(locale!, ["common", "builder", "sidebar"])),
+        },
+    };
 };

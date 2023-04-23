@@ -1,0 +1,19 @@
+{
+	"home": "Home",
+	"about": "About",
+	"contact": "Contact",
+	"open": "Open",
+	"share": "Share",
+	"rename": "Rename",
+	"duplicate": "Duplicate",
+	"close": "Close",
+	"cancel": "Cancel",
+	"save": "Save",
+	"delete": "Delete",
+	"edit": "Edit",
+	"add": "Add",
+	"copy_link": "Copy link",
+	"copy": "Copy",
+	"copy_to": "Copy to",
+	"move_to": "Move to"
+}

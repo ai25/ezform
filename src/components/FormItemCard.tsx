@@ -1,21 +1,28 @@
 import React, { useState } from "react";
-import { Card, Dropdown, Menu } from "antd";
+import { Card, Dropdown, Menu, Spin, type MenuProps } from "antd";
 import { FiExternalLink, FiCopy, FiShare2, FiEdit, FiCopy as FiCopy2, FiTrash, FiMoreHorizontal } from "react-icons/fi";
 import Image from "next/image";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import Link from "next/link";
+import { useTranslation } from "next-i18next";
+
+import { useTheme } from "~/hooks/theme";
 
 dayjs.extend(relativeTime);
 
 interface FormItemCardProps {
+    id: string;
     title: string;
     imageUrl: string;
     workspaceNames: string[];
 }
 
-const FormItemCard: React.FC<FormItemCardProps> = ({ title, imageUrl, workspaceNames }) => {
+const FormItemCard: React.FC<FormItemCardProps> = ({ id, title, imageUrl, workspaceNames }) => {
     const [opened, setOpened] = useState<string | null>(null);
     const [fromNow, setFromNow] = useState("Never");
+    const { theme, setTheme } = useTheme();
+    const { t } = useTranslation(["common"]);
 
     React.useEffect(() => {
         if (!opened) return;
@@ -25,66 +32,87 @@ const FormItemCard: React.FC<FormItemCardProps> = ({ title, imageUrl, workspaceN
         }, 1000);
         return () => clearInterval(interval);
     }, [opened]);
+    type MenuItem = Required<MenuProps>["items"][number];
 
-    const menu = (
-        <Menu>
-            <Menu.Item key="1" icon={<FiExternalLink />}>
-                Open
-            </Menu.Item>
-            <Menu.Item key="2" icon={<FiCopy />}>
-                Copy link
-            </Menu.Item>
-            <Menu.Item key="3" icon={<FiShare2 />}>
-                Share
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item key="4" icon={<FiEdit />}>
-                Rename
-            </Menu.Item>
-            <Menu.Item key="5" icon={<FiCopy2 />}>
-                Duplicate
-            </Menu.Item>
-            <Menu.SubMenu key="6" title="Copy to">
-                {workspaceNames.map((name, index) => (
-                    <Menu.Item key={`6-${index}`}>{name}</Menu.Item>
-                ))}
-            </Menu.SubMenu>
-            <Menu.SubMenu key="7" title="Move to">
-                {workspaceNames.map((name, index) => (
-                    <Menu.Item key={`7-${index}`}>{name}</Menu.Item>
-                ))}
-            </Menu.SubMenu>
-            <Menu.Divider />
-            <Menu.Item key="8" icon={<FiTrash />} danger={true}>
-                Delete
-            </Menu.Item>
-        </Menu>
-    );
+    function getItem(
+        label: React.ReactNode,
+        key: React.Key,
+        icon?: React.ReactNode,
+        children?: MenuItem[],
+        type?: "group" | "divider",
+        danger?: boolean,
+    ): MenuItem {
+        return {
+            key,
+            icon,
+            children,
+            label,
+            type,
+            danger,
+        } as MenuItem;
+    }
+
+    const items: MenuProps["items"] = [
+        getItem(t("common:open"), `${id}-1`, <FiExternalLink />),
+        getItem(t("common:copy_link"), `${id}-2`, <FiCopy />),
+        getItem(t("common:share"), `${id}-3`, <FiShare2 />),
+        { type: "divider" },
+        getItem(t("common:edit"), `${id}-4`, <FiEdit />),
+        getItem(t("common:duplicate"), `${id}-5`, <FiCopy2 />),
+        getItem(
+            t("common:copy_to"),
+            `${id}-6`,
+            null,
+            workspaceNames.map((name, index) => getItem(name, `${id}-6-${index}`)),
+        ),
+        getItem(
+            t("common:move_to"),
+            `${id}-7`,
+            null,
+            workspaceNames.map((name, index) => getItem(name, `${id}-7-${index}`)),
+        ),
+        { type: "divider" },
+        getItem(t("common:delete"), `${id}-8`, <FiTrash />, undefined, undefined, true),
+    ];
+    const menu: MenuProps = {
+        items,
+        onClick: ({ key }) => {
+            console.log(key);
+        },
+    };
+    const [loading, setLoading] = React.useState(true);
+    React.useEffect(() => {
+        const timeout = setTimeout(() => {
+            setLoading(false);
+        }, 1000);
+        return () => clearTimeout(timeout);
+    }, []);
+    if (loading) return <Spin />;
+    console.log(theme);
 
     return (
         <Card
             style={{ width: 220 }}
             cover={
-                <div className="relative h-32">
-                    <div className="flex items-center justify-center absolute inset-0 pointer-events-none">
-                        <h2 className="text-white text-xl">{title}</h2>
+                <Link href={`/builder/${id}`} className="relative h-32">
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                        <h2 className="text-xl text-white">{title}</h2>
                     </div>
                     <Image
-                        onClick={() => setOpened(dayjs().toString())}
                         width={300}
                         height={300}
                         unoptimized
                         alt={title}
                         src={imageUrl}
-                        className="object-cover h-32 cursor-pointer"
+                        className="h-32 cursor-pointer object-cover"
                     />
-                </div>
+                </Link>
             }
             className="relative"
         >
             <div className="flex items-center justify-between p-0">
                 <span className="text-xs">Opened: {fromNow}</span>
-                <Dropdown overlay={menu} trigger={["click"]}>
+                <Dropdown menu={menu} trigger={["click"]}>
                     <FiMoreHorizontal className="cursor-pointer text-lg" />
                 </Dropdown>
             </div>

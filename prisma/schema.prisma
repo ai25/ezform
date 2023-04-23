@@ -14,12 +14,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
 // Necessary for Next auth
 model Account {
     id                       String  @id @default(cuid())
@@ -27,12 +21,12 @@ model Account {
     type                     String
     provider                 String
     providerAccountId        String
-    refresh_token            String?  //@db.Text
-    access_token             String?  //@db.Text
+    refresh_token            String? //@db.Text
+    access_token             String? //@db.Text
     expires_at               Int?
     token_type               String?
     scope                    String?
-    id_token                 String?  //@db.Text
+    id_token                 String? //@db.Text
     session_state            String?
     user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     refresh_token_expires_in Int? // for github
@@ -49,9 +43,9 @@ model Session {
 }
 
 model User {
-    id            String     @id @default(cuid())
+    id            String    @id @default(cuid())
     name          String?
-    email         String?    @unique
+    email         String?   @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
@@ -68,7 +62,7 @@ model VerificationToken {
 }
 
 model Form {
-    id          Int        @id @default(autoincrement())
+    id          String     @id @default(cuid())
     title       String
     description String?
     user        User       @relation(fields: [userId], references: [id])
@@ -78,28 +72,29 @@ model Form {
 }
 
 model Question {
-    id        Int        @id @default(autoincrement())
+    id        String     @id @default(cuid())
     text      String
     type      String
     order     Int
     form      Form       @relation(fields: [formId], references: [id])
-    formId    Int
+    formId    String
+    required  Boolean
     options   Option[]
     logic     Logic[]
     responses Response[]
 }
 
 model Option {
-    id         Int      @id @default(autoincrement())
+    id         String   @id @default(cuid())
     text       String
     question   Question @relation(fields: [questionId], references: [id])
-    questionId Int
+    questionId String
 }
 
 model Logic {
-    id         Int      @id @default(autoincrement())
+    id         String   @id @default(cuid())
     question   Question @relation(fields: [questionId], references: [id])
-    questionId Int
+    questionId String
     field      String
     operator   String
     value      String
@@ -107,10 +102,10 @@ model Logic {
 }
 
 model Response {
-    id         Int      @id @default(autoincrement())
+    id         String   @id @default(cuid())
     form       Form     @relation(fields: [formId], references: [id])
-    formId     Int
+    formId     String
     question   Question @relation(fields: [questionId], references: [id])
-    questionId Int
+    questionId String
     answer     String //Json
 }

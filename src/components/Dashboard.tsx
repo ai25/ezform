@@ -1,16 +1,14 @@
 import React from "react";
-import Sidebar from "./Sidebar";
+import { Layout } from "antd";
 import Header from "./Header";
-import Workspace from "./Workspace";
 
-export default function Dashboard({ workspaceId }: { workspaceId: string }) {
+const Dashboard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
-        <>
+        <Layout>
             <Header />
-            <div className="flex">
-                <Sidebar />
-                <Workspace id={workspaceId} />
-            </div>
-        </>
+            <Layout>{children}</Layout>
+        </Layout>
     );
-}
+};
+
+export default Dashboard;

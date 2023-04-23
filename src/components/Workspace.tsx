@@ -1,21 +1,69 @@
-import { Card, Empty, Grid } from "antd";
+import { Button, Card, Empty, Grid, Spin, Layout } from "antd";
 import React from "react";
-import FormItemCard from "./FormItemCard";
-import FormItemMenu from "./Menu";
+import { nanoid } from "nanoid";
+import { type User } from "@prisma/client";
+import { useTranslation } from "next-i18next";
 
-export default function Workspace({ id }: { id: string }) {
-    const data = true;
+import FormItemCard from "./FormItemCard";
+import useBuilderStore, { FormWithRelations } from "~/store/builder-store";
+
+const { Content } = Layout;
+
+const Workspace: React.FC<{ id: string }> = ({ id }) => {
+    const { forms, addForm } = useBuilderStore();
+    const user: User = {
+        id: "1",
+        name: "John Doe",
+        email: "johndoe@example.com",
+        image: "https://via.placeholder.com/150",
+        emailVerified: new Date(),
+    };
+    const { t } = useTranslation(["common", "builder"]);
+
+    function createNewForm() {
+        addForm({
+            id: nanoid(8),
+            title: t("builder:untitled_form"),
+            questions: [],
+            description: "",
+            // workspaceId: id,
+            userId: user.id,
+            user: user,
+            responses: [],
+        });
+    }
+    const [loading, setLoading] = React.useState(true);
+    React.useEffect(() => {
+        const timeout = setTimeout(() => {
+            setLoading(false);
+        }, 1000);
+        return () => clearTimeout(timeout);
+    }, []);
+    if (loading) return <Spin />;
+
     return (
-        <div className="flex-1 p-2 bg-fuchsia-200">
-            {data ? (
-                <div className="flex flex-wrap">
-                    <FormItemCard title="xdd" imageUrl="https://dummyimage.com/300x300/000/fff" workspaceNames={["xd", "xd"]} />
-                </div>
+        <Content className="p-2">
+            {forms.length > 0 ? (
+                forms.map((form, index) => (
+                    <div key={index} className="flex flex-wrap">
+                        <FormItemCard
+                            id={form.id}
+                            imageUrl="https://via.placeholder.com/150"
+                            title={form.title}
+                            workspaceNames={["csa", "dsa"]}
+                        />
+                    </div>
+                ))
             ) : (
-                <div className="flex justify-center items-center h-full">
+                <div className="flex items-center justify-center h-full">
                     <Empty description="No forms" />
+                    <Button onClick={createNewForm} type="primary" size="large">
+                        Create Form
+                    </Button>
                 </div>
             )}
-        </div>
+        </Content>
     );
-}
+};
+
+export default Workspace;
