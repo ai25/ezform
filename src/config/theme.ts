@@ -1,4 +1,10 @@
 export const lightTheme = {
+    colorPrimary: "#1677ff",
+    colorBgBase: "#fff",
+    colorError: "#ff4d4f",
+    colorSuccess: "#52c41a",
+    colorWarning: "#ffa940",
+    colorInfo: "#1890ff",
     colorBgContainerDisabled: "rgba(0, 0, 0, 0.04)",
     colorBgTextActive: "rgba(0, 0, 0, 0.15)",
     colorBgTextHover: "rgba(0, 0, 0, 0.06)",
