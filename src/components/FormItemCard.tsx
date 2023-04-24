@@ -7,7 +7,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import Link from "next/link";
 import { useTranslation } from "next-i18next";
 
-import { useTheme } from "~/hooks/theme";
+import { usePreferencesStore } from "../store/preferences";
 
 dayjs.extend(relativeTime);
 
@@ -21,7 +21,7 @@ interface FormItemCardProps {
 const FormItemCard: React.FC<FormItemCardProps> = ({ id, title, imageUrl, workspaceNames }) => {
     const [opened, setOpened] = useState<string | null>(null);
     const [fromNow, setFromNow] = useState("Never");
-    const { theme, setTheme } = useTheme();
+    const { theme } = usePreferencesStore();
     const { t } = useTranslation(["common"]);
 
     React.useEffect(() => {
@@ -80,21 +80,12 @@ const FormItemCard: React.FC<FormItemCardProps> = ({ id, title, imageUrl, worksp
             console.log(key);
         },
     };
-    const [loading, setLoading] = React.useState(true);
-    React.useEffect(() => {
-        const timeout = setTimeout(() => {
-            setLoading(false);
-        }, 1000);
-        return () => clearTimeout(timeout);
-    }, []);
-    if (loading) return <Spin />;
-    console.log(theme);
 
     return (
         <Card
             style={{ width: 220 }}
             cover={
-                <Link href={`/builder/${id}`} className="relative h-32">
+                <Link href={`/builder/${id}`} className="relative">
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                         <h2 className="text-xl text-white">{title}</h2>
                     </div>
@@ -104,13 +95,13 @@ const FormItemCard: React.FC<FormItemCardProps> = ({ id, title, imageUrl, worksp
                         unoptimized
                         alt={title}
                         src={imageUrl}
-                        className="h-32 cursor-pointer object-cover"
+                        className="h-32 max-w-full cursor-pointer object-cover"
                     />
                 </Link>
             }
             className="relative"
         >
-            <div className="flex items-center justify-between p-0">
+            <div className="flex items-center justify-between">
                 <span className="text-xs">Opened: {fromNow}</span>
                 <Dropdown menu={menu} trigger={["click"]}>
                     <FiMoreHorizontal className="cursor-pointer text-lg" />

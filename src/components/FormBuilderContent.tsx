@@ -6,12 +6,14 @@ import { useTranslation } from "next-i18next";
 
 import useBuilderStore, { type QuestionWithRelations } from "~/store/builder-store";
 import FormBuilderQuestion from "./FormBuilderQuestion";
+import DraggableFormBuilderQuestion from "./DraggableFormBuilderQuestion";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const FormBuilderContent: React.FC<{ formId: string }> = ({ formId }) => {
-    const { forms, addQuestion } = useBuilderStore();
+    const { forms, addQuestion, updateQuestion, updateForm } = useBuilderStore();
     const form = forms?.find(form => form.id === formId);
     const { t } = useTranslation(["common", "builder", "sidebar"]);
-    const [domLoaded, setDomLoaded] = React.useState(false);
 
     function addField() {
         if (!form) return;
@@ -29,12 +31,24 @@ const FormBuilderContent: React.FC<{ formId: string }> = ({ formId }) => {
             form: form,
         });
     }
-    React.useEffect(() => {
-        setDomLoaded(true);
-    }, []);
+    function handleChangeTitle(question: QuestionWithRelations, text: string) {
+        updateQuestion(question.formId, question.id, { text });
+    }
+
+    const moveQuestion = React.useCallback(
+        (dragIndex: number, hoverIndex: number) => {
+            if (!form) return;
+            const dragQuestion = form.questions[dragIndex]!;
+            const newQuestions = [...form.questions];
+            newQuestions.splice(dragIndex, 1);
+            newQuestions.splice(hoverIndex, 0, dragQuestion);
+            updateForm(formId, { questions: newQuestions });
+        },
+        [form, formId, updateForm],
+    );
 
     return (
-        <div className="">
+        <div className="space-y-2">
             <div className="">
                 <div className="flex items-center justify-between">
                     <div>{t("sidebar:content")}</div>
@@ -48,11 +62,20 @@ const FormBuilderContent: React.FC<{ formId: string }> = ({ formId }) => {
                     />
                 </div>
             </div>
-            <div className="flex flex-col gap-1 overflow-y-auto">
-                {domLoaded &&
-                    (form?.questions as QuestionWithRelations[])?.map(question => (
-                        <FormBuilderQuestion question={question} key={question.id} />
+            <div className="flex flex-col overflow-y-auto gap-1">
+                <DndProvider backend={HTML5Backend}>
+                    {(form?.questions as QuestionWithRelations[])?.map((question, index) => (
+                        <DraggableFormBuilderQuestion
+                            question={question}
+                            onTitleUpdate={(question: QuestionWithRelations, text: string) =>
+                                handleChangeTitle(question, text)
+                            }
+                            key={question.id}
+                            index={index}
+                            moveQuestion={moveQuestion}
+                        />
                     ))}
+                </DndProvider>
             </div>
         </div>
     );

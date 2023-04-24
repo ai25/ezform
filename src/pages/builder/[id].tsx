@@ -14,7 +14,7 @@ const FormBuilder: React.FC = ({ id }: InferGetServerSidePropsType<typeof getSer
         <Dashboard>
             <Layout>
                 <Sidebar>
-                    <FormBuilderContent formId={id} />
+                    <FormBuilderContent formId={id as string} />
                 </Sidebar>
             </Layout>
         </Dashboard>

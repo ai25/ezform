@@ -10,10 +10,9 @@ import "~/styles/globals.css";
 import { appWithTranslation, useTranslation } from "next-i18next";
 
 const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
-    const { t, i18n } = useTranslation();
+    const { i18n } = useTranslation();
 
     const direction = i18n.dir();
-    console.log(direction, t("home"));
     React.useEffect(() => {
         document.body.dir = direction;
     }, [direction]);

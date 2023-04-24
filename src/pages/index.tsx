@@ -12,8 +12,8 @@ const Home: NextPage = () => {
     return (
         <Dashboard>
             <Sidebar>
-                <div className="flex h-full flex-col items-center justify-center">
-                    <h1 className="text-2xl font-bold">Welcome to Typeform</h1>
+                <div className="flex flex-col items-center justify-center h-full">
+                    <h1 className="text-2xl font-bold">Welcome to EZForm</h1>
                 </div>
             </Sidebar>
             <Workspace id="1" />

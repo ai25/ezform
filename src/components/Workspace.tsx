@@ -1,4 +1,4 @@
-import { Button, Card, Empty, Grid, Spin, Layout } from "antd";
+import { Button, Empty, Layout } from "antd";
 import React from "react";
 import { nanoid } from "nanoid";
 import { type User } from "@prisma/client";
@@ -32,14 +32,6 @@ const Workspace: React.FC<{ id: string }> = ({ id }) => {
             responses: [],
         });
     }
-    const [loading, setLoading] = React.useState(true);
-    React.useEffect(() => {
-        const timeout = setTimeout(() => {
-            setLoading(false);
-        }, 1000);
-        return () => clearTimeout(timeout);
-    }, []);
-    if (loading) return <Spin />;
 
     return (
         <Content className="p-2">
@@ -55,7 +47,7 @@ const Workspace: React.FC<{ id: string }> = ({ id }) => {
                     </div>
                 ))
             ) : (
-                <div className="flex items-center justify-center h-full">
+                <div className="flex h-full items-center justify-center">
                     <Empty description="No forms" />
                     <Button onClick={createNewForm} type="primary" size="large">
                         Create Form

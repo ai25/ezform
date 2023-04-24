@@ -1,10 +1,14 @@
-import { Layout } from "antd";
 import React, { type ReactNode } from "react";
 
-const { Sider, Content } = Layout;
+import { usePreferencesStore } from "../store/preferences";
 
 const Sidebar: React.FC<{ children: ReactNode }> = ({ children }) => {
-    return <Sider className="p-2">{children}</Sider>;
+    const { theme } = usePreferencesStore();
+    return (
+        <aside style={{ backgroundColor: theme.background }} className="h-full min-w-[10rem] max-w-sm p-2 ring-2 ring-blue-600/10 resize-x overflow-auto">
+            {children}
+        </aside>
+    );
 };
 
 export default Sidebar;
