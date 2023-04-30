@@ -10,13 +10,13 @@ import { TextQuestion } from "~/questions/TextQuestion";
 import MultipleChoiceQuestion from "~/questions/MultipleChoiceQuestion";
 import type Question from "~/questions/Question";
 import { type QuestionType } from "~/types/question-types";
-import { NumberQuestion } from '../questions/NumberQuestion';
+import { NumberQuestion } from "../questions/NumberQuestion";
 import { DateTimeQuestion } from "~/questions/DateTimeQuestion";
-import { OpinionScaleQuestion } from '../questions/OpinionScaleQuestion';
-import { RatingQuestion } from '../questions/RatingQuestion';
-import { MatrixQuestion } from '../questions/MatrixQuestion';
-import { DropdownQuestion } from '../questions/DropdownQuestion';
-import { RankingQuestion } from '../questions/RankingQuestion';
+import { OpinionScaleQuestion } from "../questions/OpinionScaleQuestion";
+import { RatingQuestion } from "../questions/RatingQuestion";
+import { MatrixQuestion } from "../questions/MatrixQuestion";
+import { DropdownQuestion } from "../questions/DropdownQuestion";
+import { RankingQuestion } from "../questions/RankingQuestion";
 
 interface FormBuilderContentProps {
     formId: string;

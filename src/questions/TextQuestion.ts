@@ -57,4 +57,3 @@ export class TextQuestion extends Question implements PrimaTextQuestion {
         this.targets = [];
     }
 }
-

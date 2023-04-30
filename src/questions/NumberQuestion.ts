@@ -2,7 +2,7 @@ import Question from "./Question";
 import type { QuestionType } from "~/types/question-types";
 import type { Branch, Option, Response, NumberQuestion as PrimaNumberQuestion } from "@prisma/client";
 import { nanoid } from "nanoid";
-import { type NumberQuestionType } from '../types/question-types';
+import { type NumberQuestionType } from "../types/question-types";
 
 export class NumberQuestion extends Question implements PrimaNumberQuestion {
     id: string;

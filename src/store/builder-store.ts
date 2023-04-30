@@ -70,7 +70,7 @@ const useBuilderStore = create<BuilderState>()(
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions ).map(question =>
+                                  questions: form.questions.map(question =>
                                       question.id === questionId
                                           ? { ...question, options: [...question.options, option] }
                                           : question,
@@ -85,7 +85,7 @@ const useBuilderStore = create<BuilderState>()(
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions ).map(question =>
+                                  questions: form.questions.map(question =>
                                       question.id === questionId
                                           ? {
                                                 ...question,
@@ -105,7 +105,7 @@ const useBuilderStore = create<BuilderState>()(
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions ).map(question =>
+                                  questions: form.questions.map(question =>
                                       question.id === questionId
                                           ? {
                                                 ...question,
@@ -123,7 +123,7 @@ const useBuilderStore = create<BuilderState>()(
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions ).map(question =>
+                                  questions: form.questions.map(question =>
                                       question.id === questionId
                                           ? { ...question, branches: [...question.branches, branch] }
                                           : question,
@@ -138,7 +138,7 @@ const useBuilderStore = create<BuilderState>()(
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions ).map(question =>
+                                  questions: form.questions.map(question =>
                                       question.id === questionId
                                           ? {
                                                 ...question,
@@ -158,7 +158,7 @@ const useBuilderStore = create<BuilderState>()(
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions ).map(question =>
+                                  questions: form.questions.map(question =>
                                       question.id === questionId
                                           ? {
                                                 ...question,

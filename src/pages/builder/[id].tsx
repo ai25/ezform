@@ -18,9 +18,9 @@ const FormBuilder: React.FC = ({ id }: InferGetServerSidePropsType<typeof getSer
     const [activeQuestion, setActiveQuestion] = React.useState<Question | null>(null);
     const form = forms.find(form => form.id === id);
     if (form) {
-        questions = form.questions
+        questions = form.questions;
     }
-    console.log(activeQuestion)
+    console.log(activeQuestion);
     return (
         <Dashboard>
             <Sidebar>

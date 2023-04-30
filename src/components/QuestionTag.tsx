@@ -1,6 +1,17 @@
 import React, { type PropsWithChildren } from "react";
 import { BiText } from "react-icons/bi";
-import { FaQuestion, FaSortNumericDown, FaRegQuestionCircle, FaCaretDown, FaSlidersH, FaTrash, FaMoneyBillWaveAlt, FaObjectGroup, FaToggleOff, FaBalanceScale } from "react-icons/fa";
+import {
+    FaQuestion,
+    FaSortNumericDown,
+    FaRegQuestionCircle,
+    FaCaretDown,
+    FaSlidersH,
+    FaTrash,
+    FaMoneyBillWaveAlt,
+    FaObjectGroup,
+    FaToggleOff,
+    FaBalanceScale,
+} from "react-icons/fa";
 import {
     AiOutlineMail,
     AiOutlinePhone,
@@ -10,7 +21,7 @@ import {
     AiOutlineHome,
     AiOutlineBorderlessTable,
 } from "react-icons/ai";
-import {HiViewGrid} from "react-icons/hi";
+import { HiViewGrid } from "react-icons/hi";
 import { ImLink } from "react-icons/im";
 import { GoCalendar } from "react-icons/go";
 import { IoIosStar, IoMdArrowRoundUp, IoIosCheckboxOutline } from "react-icons/io";
@@ -60,11 +71,11 @@ export function getQuestionTypeIcon(type: QuestionType): JSX.Element {
         case "image_choice":
             return <AiOutlinePicture />;
         case "boolean":
-            return <FaToggleOff/>;
+            return <FaToggleOff />;
         case "number":
             return <AiOutlineNumber />;
         case "question_group":
-            return <HiViewGrid/>;
+            return <HiViewGrid />;
         default:
             return <FaRegQuestionCircle />;
     }
@@ -74,7 +85,7 @@ export function getQuestionsByCategory(category: string): QuestionType[] {
         case "text":
             return ["text", "statement"];
         case "contact":
-            return ["address","email", "phone", "website"];
+            return ["address", "email", "phone", "website"];
         case "date":
             return ["date"];
         case "rating":

@@ -14,7 +14,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     const dark: ThemeConfig = {
         token: {
             ...darkTheme,
-            colorBgBase: "#080808"
+            colorBgBase: "#080808",
         },
         algorithm: antTheme.darkAlgorithm,
     };

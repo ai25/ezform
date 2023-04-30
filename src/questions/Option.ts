@@ -18,4 +18,3 @@ export class Option implements PrismaOption {
         this.rankingQuestionId = null;
     }
 }
-
