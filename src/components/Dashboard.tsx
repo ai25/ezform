@@ -12,9 +12,9 @@ const Dashboard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     if (!domLoaded) return null;
     return (
-        <Layout className="h-screen" style={{ color: theme.text }}>
+        <Layout className="h-screen max-w-full overflow-hidden" style={{ color: theme.text }}>
             <Header />
-            <Layout className="flex-row">{children}</Layout>
+            <Layout className="max-w-full flex-row overflow-hidden">{children}</Layout>
         </Layout>
     );
 };

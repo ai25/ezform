@@ -1,11 +1,14 @@
 import React from "react";
 import { Button, Card } from "antd";
 
-import useBuilderStore, { type QuestionWithRelations } from "~/store/builder-store";
-import QuestionTag, { type QuestionType } from "./QuestionTag";
+import useBuilderStore from "~/store/builder-store";
+import QuestionTag from "./QuestionTag";
 import { FaTrash } from "react-icons/fa";
+import { type QuestionType } from "~/types/question-types";
+import type Question from "~/questions/Question";
+import { type TextQuestion } from "../questions/TextQuestion";
 
-const FormBuilderQuestion: React.FC<{ question: QuestionWithRelations; onTitleUpdate: (text: string) => void }> = ({
+const FormBuilderQuestion: React.FC<{ question: Question; onTitleUpdate: (text: string) => void }> = ({
     question,
     onTitleUpdate,
 }) => {
@@ -24,7 +27,7 @@ const FormBuilderQuestion: React.FC<{ question: QuestionWithRelations; onTitleUp
     return (
         <Card size="small">
             <div className="flex items-center justify-between gap-1">
-                <QuestionTag type={question.type as QuestionType} />
+                <QuestionTag type={((question as TextQuestion).subType as QuestionType) ?? question.type} />
                 <div
                     suppressContentEditableWarning
                     contentEditable

@@ -72,33 +72,172 @@ model Form {
 }
 
 model Question {
-    id        String     @id @default(cuid())
-    text      String
-    type      String
-    order     Int
-    form      Form       @relation(fields: [formId], references: [id])
-    formId    String
-    required  Boolean
-    options   Option[]
-    logic     Logic[]
-    responses Response[]
+    id                     String                  @id @default(cuid())
+    text                   String
+    description            String?
+    alias                  String?
+    type                   String
+    form                   Form                    @relation(fields: [formId], references: [id])
+    formId                 String
+    required               Boolean
+    category               String
+    order                  Int
+    visible                Boolean
+    imageUrl               String?
+    imageFit               String?
+    options                Option[]
+    branches               Branch[]
+    targets                Branch[]                @relation("Target")
+    responses              Response[]
+    textQuestion           TextQuestion?
+    numberQuestion         NumberQuestion?
+    addressQuestion        AddressQuestion?
+    contactQuestion        ContactQuestion?
+    matrixQuestion         MatrixQuestion?
+    opinionScaleQuestion   OpinionScaleQuestion?
+    ratingQuestion         RatingQuestion?
+    rankingQuestion        RankingQuestion?
+    multipleChoiceQuestion MultipleChoiceQuestion?
+    dropdownQuestion       DropdownQuestion?
+    dateTimeQuestion       DateTimeQuestion?
+}
+
+// text 
+model TextQuestion {
+    id         String   @id @default(cuid())
+    question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId String   @unique
+    subType    String // text, statement, email, phone, website
+}
+
+model AddressQuestion {
+    id              String   @id @default(cuid())
+    question        Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId      String   @unique
+    line1Required   Boolean
+    line2Required   Boolean
+    cityRequired    Boolean
+    stateRequired   Boolean
+    zipRequired     Boolean
+    countryRequired Boolean
+}
+
+model ContactQuestion {
+    id                String   @id @default(cuid())
+    question          Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId        String   @unique
+    firstNameRequired Boolean
+    lastNameRequired  Boolean
+    emailRequired     Boolean
+    phoneRequired     Boolean
+    companyRequired   Boolean
+}
+
+model NumberQuestion {
+    id         String   @id @default(cuid())
+    question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId String   @unique
+    subType    String // number, currency, percentage
+    min        Int?
+    max        Int?
+}
+
+model DateTimeQuestion {
+    id          String   @id @default(cuid())
+    question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId  String   @unique
+    includeTime Boolean
+}
+
+model OpinionScaleQuestion {
+    id          String   @id @default(cuid())
+    question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId  String   @unique
+    min         Int
+    max         Int
+    startLabel  String?
+    middleLabel String?
+    endLabel    String?
+}
+
+model RatingQuestion {
+    id         String   @id @default(cuid())
+    question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId String   @unique
+    outOf      Int
+    type       String // star, heart, thumb, smiley
+}
+
+model RankingQuestion {
+    id         String   @id @default(cuid())
+    question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId String   @unique
+    options    Option[]
+}
+
+model MatrixQuestion {
+    id         String   @id @default(cuid())
+    question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId String   @unique
+    rows       Row[]
+    columns    Column[]
+}
+
+model Row {
+    id               String         @id @default(cuid())
+    text             String
+    matrixQuestion   MatrixQuestion @relation(fields: [matrixQuestionId], references: [id])
+    matrixQuestionId String
+}
+
+model Column {
+    id               String         @id @default(cuid())
+    text             String
+    matrixQuestion   MatrixQuestion @relation(fields: [matrixQuestionId], references: [id])
+    matrixQuestionId String
+}
+
+model DropdownQuestion {
+    id         String   @id @default(cuid())
+    question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId String   @unique
+    options    Option[]
+    sort       String? // asc, desc, random
+}
+
+model MultipleChoiceQuestion {
+    id            String   @id @default(cuid())
+    question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    questionId    String   @unique
+    options       Option[]
+    allowMultiple Boolean
+    minSelections Int?
+    maxSelections Int?
+    allowOther    Boolean
+    sort          String? // asc, desc, random
+    layout        String? // vertical, horizontal
 }
 
 model Option {
-    id         String   @id @default(cuid())
-    text       String
-    question   Question @relation(fields: [questionId], references: [id])
-    questionId String
+    id                       String                  @id @default(cuid())
+    text                     String
+    question                 Question                @relation(fields: [questionId], references: [id])
+    questionId               String
+    multipleChoiceQuestion   MultipleChoiceQuestion? @relation(fields: [multipleChoiceQuestionId], references: [id])
+    multipleChoiceQuestionId String?
+    rankingQuestion          RankingQuestion?        @relation(fields: [rankingQuestionId], references: [id])
+    rankingQuestionId        String?
+    dropdownQuestion         DropdownQuestion?       @relation(fields: [dropdownQuestionId], references: [id])
+    dropdownQuestionId       String?
 }
 
-model Logic {
-    id         String   @id @default(cuid())
-    question   Question @relation(fields: [questionId], references: [id])
+model Branch {
+    id         String    @id @default(cuid())
+    question   Question  @relation(fields: [questionId], references: [id])
     questionId String
-    field      String
-    operator   String
-    value      String
-    targetId   Int
+    condition  String // Store the condition as a string (e.g., "age > 18")
+    targetId   String?
+    target     Question? @relation("Target", fields: [targetId], references: [id])
 }
 
 model Response {
@@ -108,4 +247,6 @@ model Response {
     question   Question @relation(fields: [questionId], references: [id])
     questionId String
     answer     String //Json
+    createdAt  DateTime
+    updatedAt  DateTime
 }

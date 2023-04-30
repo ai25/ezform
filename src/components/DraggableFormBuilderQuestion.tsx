@@ -2,16 +2,17 @@ import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
-import { type QuestionWithRelations } from "~/store/builder-store";
 import FormBuilderQuestion from "./FormBuilderQuestion";
+import type Question from "~/questions/Question";
 interface FormBuilderQuestionProps {
-    question: QuestionWithRelations;
-    onTitleUpdate: (question: QuestionWithRelations, text: string) => void;
+    question: Question;
+    onTitleUpdate: (question: Question, text: string) => void;
 }
 
 interface DraggableFormBuilderQuestionProps extends FormBuilderQuestionProps {
     index: number;
     moveQuestion: (dragIndex: number, hoverIndex: number) => void;
+    onSelected: (question: Question) => void;
 }
 
 interface DragItem {
@@ -25,6 +26,7 @@ const DraggableFormBuilderQuestion: React.FC<DraggableFormBuilderQuestionProps> 
     onTitleUpdate,
     index,
     moveQuestion,
+    onSelected,
 }) => {
     const ref = React.useRef<HTMLDivElement | null>(null);
 
@@ -63,7 +65,7 @@ const DraggableFormBuilderQuestion: React.FC<DraggableFormBuilderQuestionProps> 
     const opacity = isDragging ? 0 : 1;
 
     return (
-        <div ref={ref} style={{ opacity }} className="cursor-grab">
+        <div onSelect={() => onSelected(question)} ref={ref} style={{ opacity }} className="cursor-grab">
             <FormBuilderQuestion
                 question={question}
                 onTitleUpdate={(text: string) => onTitleUpdate(question, text)}

@@ -7,16 +7,30 @@ import Dashboard from "~/components/Dashboard";
 import Sidebar from "~/components/Sidebar";
 import FormBuilderContent from "~/components/FormBuilderContent";
 import Workspace from "~/components/Workspace";
-import { Layout } from "antd";
+import Flowchart from "~/components/flowchart/Flowchart";
+import useBuilderStore from "~/store/builder-store";
+import QuestionBuilderPreview from "~/components/QuestionBuilderPreview";
+import type Question from "~/questions/Question";
 
 const FormBuilder: React.FC = ({ id }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+    const { forms } = useBuilderStore();
+    let questions: Question[] = [];
+    const [activeQuestion, setActiveQuestion] = React.useState<Question | null>(null);
+    const form = forms.find(form => form.id === id);
+    if (form) {
+        questions = form.questions
+    }
+    console.log(activeQuestion)
     return (
         <Dashboard>
-            <Layout>
-                <Sidebar>
-                    <FormBuilderContent formId={id as string} />
-                </Sidebar>
-            </Layout>
+            <Sidebar>
+                <FormBuilderContent
+                    formId={id as string}
+                    onActiveQuestionChange={question => setActiveQuestion(question)}
+                />
+            </Sidebar>
+            {activeQuestion && <QuestionBuilderPreview question={activeQuestion} />}
+            {/* <Flowchart /> */}
         </Dashboard>
     );
 };

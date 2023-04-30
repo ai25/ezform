@@ -83,6 +83,7 @@ if (!skip) {
     throw new Error("Invalid environment variables");
   }
 
+  // eslint-disable-next-line no-undef
   env = new Proxy(parsed.data, {
     get(target, prop) {
       if (typeof prop !== "string") return undefined;

@@ -11,10 +11,12 @@ interface PreferencesState {
     toggleTheme: () => void;
     language: string;
     setLanguage: (language: string) => void;
+    flowChartZoom: number;
+    setFlowChartZoom: (prevZoom: number, delta: number) => void;
 }
 const colors = {
     dark: {
-        background: "#141414",
+        background: "#1f1f1f",
         primary: "#7d17ff",
         text: "#fff",
     },
@@ -46,6 +48,8 @@ export const usePreferencesStore = create<PreferencesState>()(
             },
             language: "en",
             setLanguage: language => set({ language }),
+            flowChartZoom: 1,
+            setFlowChartZoom: (prevZoom, delta) => set({ flowChartZoom: Math.max(0.5, Math.min(3, prevZoom * delta)) }),
         }),
         {
             name: "preferences-storage",

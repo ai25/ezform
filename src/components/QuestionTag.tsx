@@ -1,6 +1,6 @@
 import React, { type PropsWithChildren } from "react";
 import { BiText } from "react-icons/bi";
-import { FaQuestion, FaSortNumericDown, FaRegQuestionCircle, FaCaretDown, FaSlidersH, FaTrash } from "react-icons/fa";
+import { FaQuestion, FaSortNumericDown, FaRegQuestionCircle, FaCaretDown, FaSlidersH, FaTrash, FaMoneyBillWaveAlt, FaObjectGroup, FaToggleOff, FaBalanceScale } from "react-icons/fa";
 import {
     AiOutlineMail,
     AiOutlinePhone,
@@ -8,15 +8,18 @@ import {
     AiOutlineNumber,
     AiOutlineCheckSquare,
     AiOutlineHome,
+    AiOutlineBorderlessTable,
 } from "react-icons/ai";
+import {HiViewGrid} from "react-icons/hi";
 import { ImLink } from "react-icons/im";
 import { GoCalendar } from "react-icons/go";
 import { IoIosStar, IoMdArrowRoundUp, IoIosCheckboxOutline } from "react-icons/io";
 import { RiCheckboxMultipleLine } from "react-icons/ri";
 import { GiTable, GiCheckMark, GiDinosaurEgg } from "react-icons/gi";
 import { GrMoney } from "react-icons/gr";
-import { MdRadioButtonUnchecked } from "react-icons/md";
+import { MdGroupWork, MdLinearScale, MdRadioButtonUnchecked } from "react-icons/md";
 import { BsQuote } from "react-icons/bs";
+import { type QuestionType } from "~/types/question-types";
 
 export function getQuestionTypeIcon(type: QuestionType): JSX.Element {
     switch (type) {
@@ -36,36 +39,58 @@ export function getQuestionTypeIcon(type: QuestionType): JSX.Element {
             return <GoCalendar />;
         case "rating":
             return <IoIosStar />;
-        case "opinion_scale":
-            return <IoMdArrowRoundUp />;
         case "ranking":
             return <FaSortNumericDown />;
         case "file_upload":
             return <RiCheckboxMultipleLine />;
         case "multiple_choice":
-            return <IoIosCheckboxOutline />;
+            return <RiCheckboxMultipleLine />;
         case "checkboxes":
             return <AiOutlineCheckSquare />;
         case "dropdown":
             return <FaCaretDown />;
         case "linear_scale":
-            return <FaSlidersH />;
+            return <MdLinearScale />;
         case "matrix":
-            return <GiTable />;
+            return <AiOutlineBorderlessTable />;
         case "payment":
-            return <GrMoney />;
+            return <FaMoneyBillWaveAlt />;
         case "legal":
-            return <GiCheckMark />;
+            return <FaBalanceScale />;
         case "image_choice":
             return <AiOutlinePicture />;
         case "boolean":
-            return <MdRadioButtonUnchecked />;
+            return <FaToggleOff/>;
         case "number":
             return <AiOutlineNumber />;
         case "question_group":
-            return <GiDinosaurEgg />;
+            return <HiViewGrid/>;
         default:
             return <FaRegQuestionCircle />;
+    }
+}
+export function getQuestionsByCategory(category: string): QuestionType[] {
+    switch (category) {
+        case "text":
+            return ["text", "statement"];
+        case "contact":
+            return ["address","email", "phone", "website"];
+        case "date":
+            return ["date"];
+        case "rating":
+            return ["rating", "linear_scale", "matrix"];
+        case "choice":
+            return ["multiple_choice", "checkboxes", "dropdown", "image_choice", "boolean"];
+        case "file":
+            return ["file_upload"];
+        case "number":
+            return ["number"];
+        case "group":
+            return ["question_group"];
+        case "other":
+            return ["legal", "payment"];
+        default:
+            return [];
     }
 }
 
@@ -78,7 +103,6 @@ export const QUESTION_TYPES = new Set([
     "website",
     "date",
     "rating",
-    "opinion_scale",
     "ranking",
     "file_upload",
     "multiple_choice",
@@ -94,30 +118,6 @@ export const QUESTION_TYPES = new Set([
     "dropdown",
     "question_group",
 ]);
-export type QuestionType =
-    | "text"
-    | "statement"
-    | "address"
-    | "email"
-    | "phone"
-    | "website"
-    | "date"
-    | "rating"
-    | "opinion_scale"
-    | "ranking"
-    | "file_upload"
-    | "multiple_choice"
-    | "checkboxes"
-    | "dropdown"
-    | "linear_scale"
-    | "matrix"
-    | "payment"
-    | "legal"
-    | "image_choice"
-    | "boolean"
-    | "number"
-    | "dropdown"
-    | "question_group";
 
 export function isQuestionType(type: string): type is QuestionType {
     return QUESTION_TYPES.has(type);

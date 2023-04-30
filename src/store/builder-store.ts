@@ -1,58 +1,33 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Prisma } from '@prisma/client';
-
-
-export type FormWithRelations = Prisma.FormGetPayload<{
-    include: {
-        questions: {
-            include: {
-                options: true,
-                logic: true,
-            }
-        },
-        responses: true,
-        user: true,
-    }
-}>
-export type QuestionWithRelations = Prisma.QuestionGetPayload<{
-    include: {
-        options: true,
-        logic: true,
-        responses: true,
-        form: true,
-    }
-}>
-export type OptionWithRelations = Prisma.OptionGetPayload<{
-    include: {
-        question: true,
-    }
-}>
-export type LogicWithRelations = Prisma.LogicGetPayload<{
-    include: {
-        question: true,
-    }
-}>
+import type Question from "~/questions/Question";
+import { type Branch } from "../questions/Branch";
+import { type Form } from "../questions/Form";
+import { type Option } from "../questions/Option";
 
 interface BuilderState {
-    forms: FormWithRelations[];
-    addForm: (form: FormWithRelations) => void;
-    updateForm: (formId: string, updatedForm: Partial<FormWithRelations>) => void;
+    currentFormId: string | null;
+    setCurrentFormId: (formId: string) => void;
+    forms: Form[];
+    addForm: (form: Form) => void;
+    updateForm: (formId: string, updatedForm: Partial<Form>) => void;
     deleteForm: (formId: string) => void;
-    addQuestion: (formId: string, question: QuestionWithRelations) => void;
-    updateQuestion: (formId: string, questionId: string, updatedQuestion: Partial<QuestionWithRelations>) => void;
+    addQuestion: (formId: string, question: Question) => void;
+    updateQuestion: (formId: string, questionId: string, updatedQuestion: Partial<Question>) => void;
     deleteQuestion: (formId: string, questionId: string) => void;
-    addOption: (formId: string, questionId: string, option: OptionWithRelations) => void;
-    updateOption: (formId: string, questionId: string, optionId: string, updatedOption: Partial<OptionWithRelations>) => void;
+    addOption: (formId: string, questionId: string, option: Option) => void;
+    updateOption: (formId: string, questionId: string, optionId: string, updatedOption: Partial<Option>) => void;
     deleteOption: (formId: string, questionId: string, optionId: string) => void;
-    addLogic: (formId: string, questionId: string, logic: LogicWithRelations) => void;
-    updateLogic: (formId: string, questionId: string, logicId: string, updatedLogic: Partial<LogicWithRelations>) => void;
-    deleteLogic: (formId: string, questionId: string, logicId: string) => void;
+    addBranch: (formId: string, questionId: string, branch: Branch) => void;
+    updateBranch: (formId: string, questionId: string, branchId: string, updatedBranch: Partial<Branch>) => void;
+    deleteBranch: (formId: string, questionId: string, branchId: string) => void;
 }
 
 const useBuilderStore = create<BuilderState>()(
     persist(
-        set => ({
+        (set, get) => ({
+            currentFormId: null,
+            setCurrentFormId: (formId: string) => set({ currentFormId: formId }),
             forms: [],
             addForm(form) {
                 set(state => ({ forms: [...state.forms, form] }));
@@ -95,7 +70,7 @@ const useBuilderStore = create<BuilderState>()(
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions as QuestionWithRelations[]).map(question => 
+                                  questions: (form.questions ).map(question =>
                                       question.id === questionId
                                           ? { ...question, options: [...question.options, option] }
                                           : question,
@@ -110,7 +85,7 @@ const useBuilderStore = create<BuilderState>()(
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions as QuestionWithRelations[]).map(question =>
+                                  questions: (form.questions ).map(question =>
                                       question.id === questionId
                                           ? {
                                                 ...question,
@@ -130,7 +105,7 @@ const useBuilderStore = create<BuilderState>()(
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions as QuestionWithRelations[]).map(question =>
+                                  questions: (form.questions ).map(question =>
                                       question.id === questionId
                                           ? {
                                                 ...question,
@@ -142,33 +117,33 @@ const useBuilderStore = create<BuilderState>()(
                             : form,
                     ),
                 })),
-            addLogic: (formId, questionId, logic) =>
+            addBranch: (formId, questionId, branch) =>
                 set(state => ({
                     forms: state.forms.map(form =>
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions as QuestionWithRelations[]).map(question =>
+                                  questions: (form.questions ).map(question =>
                                       question.id === questionId
-                                          ? { ...question, logic: [...question.logic, logic] }
+                                          ? { ...question, branches: [...question.branches, branch] }
                                           : question,
                                   ),
                               }
                             : form,
                     ),
                 })),
-            updateLogic: (formId, questionId, logicId, updatedLogic) =>
+            updateBranch: (formId, questionId, branchId, updatedBranch) =>
                 set(state => ({
                     forms: state.forms.map(form =>
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions as QuestionWithRelations[]).map(question =>
+                                  questions: (form.questions ).map(question =>
                                       question.id === questionId
                                           ? {
                                                 ...question,
-                                                logic: question.logic.map(logic =>
-                                                    logic.id === logicId ? { ...logic, ...updatedLogic } : logic,
+                                                branches: question.branches.map(branch =>
+                                                    branch.id === branchId ? { ...branch, ...updatedBranch } : branch,
                                                 ),
                                             }
                                           : question,
@@ -177,15 +152,18 @@ const useBuilderStore = create<BuilderState>()(
                             : form,
                     ),
                 })),
-            deleteLogic: (formId, questionId, logicId) =>
+            deleteBranch: (formId, questionId, branchId) =>
                 set(state => ({
                     forms: state.forms.map(form =>
                         form.id === formId
                             ? {
                                   ...form,
-                                  questions: (form.questions as QuestionWithRelations[]).map(question =>
+                                  questions: (form.questions ).map(question =>
                                       question.id === questionId
-                                          ? { ...question, logic: question.logic.filter(logic => logic.id !== logicId) }
+                                          ? {
+                                                ...question,
+                                                branches: question.branches.filter(branch => branch.id !== branchId),
+                                            }
                                           : question,
                                   ),
                               }
@@ -198,5 +176,4 @@ const useBuilderStore = create<BuilderState>()(
         },
     ),
 );
-
 export default useBuilderStore;
