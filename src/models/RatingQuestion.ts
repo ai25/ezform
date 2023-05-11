@@ -1,16 +1,9 @@
 import Question from "./Question";
 import type { QuestionType } from "~/types/question-types";
-import type {
-    Branch,
-    Option,
-    Response,
-    MatrixQuestion as PrimaMatrixQuestion,
-    Row as PrimaRow,
-    Column as PrimaColumn,
-} from "@prisma/client";
+import type { Branch, Option, Response, RatingQuestion as PrimaRatingQuestion } from "@prisma/client";
 import { nanoid } from "nanoid";
 
-export class MatrixQuestion extends Question implements PrimaMatrixQuestion {
+export class RatingQuestion extends Question implements PrimaRatingQuestion {
     id: string;
     formId: string;
     type: QuestionType;
@@ -22,21 +15,23 @@ export class MatrixQuestion extends Question implements PrimaMatrixQuestion {
     category: string;
     visible: boolean;
     imageUrl: string;
-    imageFit: string;
+    imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
+    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
     responses: Response[];
     questionId: string;
 
-    rows: Row[];
-    columns: Column[];
+    outOf: number;
+    ratingType: string; // star, heart, thumb, smiley
 
     constructor(
+        ratingType: string, // star, heart, thumb, smiley
+        outOf: number,
         formId: string,
         lastQuestionIndex: number,
-        rows: Row[] = [],
-        columns: Column[] = [],
         text = "...",
         required = false,
         description = "",
@@ -44,12 +39,12 @@ export class MatrixQuestion extends Question implements PrimaMatrixQuestion {
         category = "",
         visible = true,
         imageUrl = "",
-        imageFit = "",
+        imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
     ) {
         super();
         this.id = nanoid();
         this.questionId = this.id;
-        this.type = "matrix";
+        this.type = "rating";
         this.formId = formId;
         this.order = lastQuestionIndex + 1;
         this.text = text;
@@ -65,31 +60,7 @@ export class MatrixQuestion extends Question implements PrimaMatrixQuestion {
         this.options = [];
         this.targets = [];
 
-        this.rows = rows;
-        this.columns = columns;
-    }
-}
-
-export class Row implements PrimaRow {
-    id: string;
-    text: string;
-    matrixQuestionId: string;
-
-    constructor(text: string, matrixQuestionId: string) {
-        this.id = nanoid();
-        this.text = text;
-        this.matrixQuestionId = matrixQuestionId;
-    }
-}
-
-export class Column implements PrimaColumn {
-    id: string;
-    text: string;
-    matrixQuestionId: string;
-
-    constructor(text: string, matrixQuestionId: string) {
-        this.id = nanoid();
-        this.text = text;
-        this.matrixQuestionId = matrixQuestionId;
+        this.outOf = outOf;
+        this.ratingType = ratingType;
     }
 }

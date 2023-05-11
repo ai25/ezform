@@ -69,6 +69,8 @@ model Form {
     userId      String
     questions   Question[]
     responses   Response[]
+    theme       Theme      @relation(fields: [themeId], references: [id])
+    themeId     String     @unique
 }
 
 model Question {
@@ -249,4 +251,20 @@ model Response {
     answer     String //Json
     createdAt  DateTime
     updatedAt  DateTime
+}
+
+model Theme {
+    id              String   @id @default(cuid())
+    name            String
+    fontFamily      String
+    fontSize        Int
+    textColor       String
+    backgroundColor String
+    borderColor     String
+    borderRadius    Int
+    buttonColor     String
+    buttonHover     String
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    form            Form?
 }

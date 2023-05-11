@@ -1,9 +1,9 @@
 import Question from "./Question";
-import type { QuestionType } from "~/types/question-types";
-import type { Branch, Option, Response, DateTimeQuestion as PrimaDateTimeQuestion } from "@prisma/client";
+import type { TextQuestionType, QuestionType } from "~/types/question-types";
+import type { Branch, Option, Response, TextQuestion as PrimaTextQuestion } from "@prisma/client";
 import { nanoid } from "nanoid";
 
-export class DateTimeQuestion extends Question implements PrimaDateTimeQuestion {
+export class TextQuestion extends Question implements PrimaTextQuestion {
     id: string;
     formId: string;
     type: QuestionType;
@@ -15,19 +15,20 @@ export class DateTimeQuestion extends Question implements PrimaDateTimeQuestion 
     category: string;
     visible: boolean;
     imageUrl: string;
-    imageFit: string;
+    imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
+    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
     responses: Response[];
     questionId: string;
-
-    includeTime: boolean;
+    subType: string;
 
     constructor(
+        subType: TextQuestionType,
         formId: string,
         lastQuestionIndex: number,
-        includeTime = false,
         text = "...",
         required = false,
         description = "",
@@ -35,12 +36,13 @@ export class DateTimeQuestion extends Question implements PrimaDateTimeQuestion 
         category = "",
         visible = true,
         imageUrl = "",
-        imageFit = "",
+        imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
     ) {
         super();
+        this.subType = subType;
         this.id = nanoid();
         this.questionId = this.id;
-        this.type = "date";
+        this.type = "text";
         this.formId = formId;
         this.order = lastQuestionIndex + 1;
         this.text = text;
@@ -55,7 +57,5 @@ export class DateTimeQuestion extends Question implements PrimaDateTimeQuestion 
         this.branches = [];
         this.options = [];
         this.targets = [];
-
-        this.includeTime = includeTime;
     }
 }

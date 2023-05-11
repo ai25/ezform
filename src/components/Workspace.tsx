@@ -6,7 +6,7 @@ import { useTranslation } from "next-i18next";
 
 import FormItemCard from "./FormItemCard";
 import useBuilderStore from "~/store/builder-store";
-import { Form } from "~/questions/Form";
+import { Form } from "~/models/Form";
 import { useSession } from "next-auth/react";
 
 const { Content } = Layout;
@@ -17,8 +17,8 @@ const Workspace: React.FC<{ id: string }> = ({ id }) => {
     const { t } = useTranslation(["common", "builder"]);
 
     function createNewForm() {
-        if (!data) return console.error("No user data");
-        addForm(new Form(data.user.id));
+        // if (!data) return console.error("No user data");
+        addForm(new Form(data?.user.id ?? "1"));
     }
 
     return (

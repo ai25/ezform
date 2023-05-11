@@ -1,9 +1,10 @@
 import Question from "./Question";
 import type { QuestionType } from "~/types/question-types";
-import type { Branch, Option, Response, RatingQuestion as PrimaRatingQuestion } from "@prisma/client";
+import type { Branch, Option, Response, NumberQuestion as PrimaNumberQuestion } from "@prisma/client";
 import { nanoid } from "nanoid";
+import { type NumberQuestionType } from "../types/question-types";
 
-export class RatingQuestion extends Question implements PrimaRatingQuestion {
+export class NumberQuestion extends Question implements PrimaNumberQuestion {
     id: string;
     formId: string;
     type: QuestionType;
@@ -15,21 +16,24 @@ export class RatingQuestion extends Question implements PrimaRatingQuestion {
     category: string;
     visible: boolean;
     imageUrl: string;
-    imageFit: string;
+    imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
+    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
     responses: Response[];
     questionId: string;
-
-    outOf: number;
-    ratingType: string; // star, heart, thumb, smiley
+    subType: NumberQuestionType;
+    min: number | null;
+    max: number | null;
 
     constructor(
-        ratingType: string, // star, heart, thumb, smiley
-        outOf: number,
+        subType: NumberQuestionType,
         formId: string,
         lastQuestionIndex: number,
+        min = null,
+        max = null,
         text = "...",
         required = false,
         description = "",
@@ -37,12 +41,12 @@ export class RatingQuestion extends Question implements PrimaRatingQuestion {
         category = "",
         visible = true,
         imageUrl = "",
-        imageFit = "",
+        imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
     ) {
         super();
         this.id = nanoid();
         this.questionId = this.id;
-        this.type = "rating";
+        this.type = "number";
         this.formId = formId;
         this.order = lastQuestionIndex + 1;
         this.text = text;
@@ -57,8 +61,8 @@ export class RatingQuestion extends Question implements PrimaRatingQuestion {
         this.branches = [];
         this.options = [];
         this.targets = [];
-
-        this.outOf = outOf;
-        this.ratingType = ratingType;
+        this.subType = subType;
+        this.min = min;
+        this.max = max;
     }
 }

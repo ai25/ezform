@@ -15,7 +15,7 @@ import ReactFlow, {
 } from "reactflow";
 
 import "reactflow/dist/style.css";
-import Question from "~/questions/Question";
+import Question from "~/models/Question";
 import useBuilderStore from "~/store/builder-store";
 import ButtonEdge from "./ButtonEdge";
 

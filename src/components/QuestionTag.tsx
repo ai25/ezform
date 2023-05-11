@@ -89,7 +89,7 @@ export function getQuestionsByCategory(category: string): QuestionType[] {
         case "date":
             return ["date"];
         case "rating":
-            return ["rating", "linear_scale", "matrix"];
+            return ["rating", "linear_scale", "matrix", "ranking"];
         case "choice":
             return ["multiple_choice", "checkboxes", "dropdown", "image_choice", "boolean"];
         case "file":

@@ -1,9 +1,9 @@
 import Question from "./Question";
-import { type QuestionType } from "~/types/question-types";
-import type { Option, MultipleChoiceQuestion as PrismaMultipleChoiceQuestion, Branch, Response } from "@prisma/client";
+import type { QuestionType } from "~/types/question-types";
+import type { Branch, Option, Response, DropdownQuestion as PrimaDropdownQuestion } from "@prisma/client";
 import { nanoid } from "nanoid";
 
-class MultipleChoiceQuestion extends Question implements PrismaMultipleChoiceQuestion {
+export class DropdownQuestion extends Question implements PrimaDropdownQuestion {
     id: string;
     formId: string;
     type: QuestionType;
@@ -15,22 +15,22 @@ class MultipleChoiceQuestion extends Question implements PrismaMultipleChoiceQue
     category: string;
     visible: boolean;
     imageUrl: string;
-    imageFit: string;
+    imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
+    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
     responses: Response[];
-    allowMultiple: boolean;
-    minSelections: number | null;
-    maxSelections: number | null;
-    allowOther: boolean;
-    sort: string | null;
-    layout: string | null; // vertical, horizontal
     questionId: string;
+
+    sort: string | null;
 
     constructor(
         formId: string,
         lastQuestionIndex: number,
+        options: Option[] = [],
+        sort: string | null = null,
         text = "...",
         required = false,
         description = "",
@@ -38,18 +38,12 @@ class MultipleChoiceQuestion extends Question implements PrismaMultipleChoiceQue
         category = "",
         visible = true,
         imageUrl = "",
-        imageFit = "",
+        imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
     ) {
         super();
-        this.allowMultiple = false;
-        this.minSelections = null;
-        this.maxSelections = null;
-        this.sort = null;
-        this.layout = null;
-        this.allowOther = false;
         this.id = nanoid();
         this.questionId = this.id;
-        this.type = "multiple_choice";
+        this.type = "dropdown";
         this.formId = formId;
         this.order = lastQuestionIndex + 1;
         this.text = text;
@@ -62,9 +56,9 @@ class MultipleChoiceQuestion extends Question implements PrismaMultipleChoiceQue
         this.required = required;
         this.responses = [];
         this.branches = [];
-        this.options = [];
         this.targets = [];
+
+        this.options = options;
+        this.sort = sort;
     }
 }
-
-export default MultipleChoiceQuestion;

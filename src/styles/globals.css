@@ -17,14 +17,28 @@ a {
     box-sizing: border-box;
 }
 
-button {
+button, input, textarea {
     background-color: transparent;
+    color: inherit;
     background-image: none;
     border: none;
-    cursor: pointer;
     outline: none;
     padding: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    border-radius: 0;
+    font: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+button {
+    cursor: pointer;
+}
+input {
+    margin: 0;
 }

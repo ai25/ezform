@@ -9,18 +9,29 @@ import FormBuilderContent from "~/components/FormBuilderContent";
 import Workspace from "~/components/Workspace";
 import Flowchart from "~/components/flowchart/Flowchart";
 import useBuilderStore from "~/store/builder-store";
-import QuestionBuilderPreview from "~/components/QuestionBuilderPreview";
-import type Question from "~/questions/Question";
+import QuestionPreview from "~/components/QuestionPreview";
+import type Question from "~/models/Question";
 
 const FormBuilder: React.FC = ({ id }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const { forms } = useBuilderStore();
     let questions: Question[] = [];
     const [activeQuestion, setActiveQuestion] = React.useState<Question | null>(null);
     const form = forms.find(form => form.id === id);
-    if (form) {
-        questions = form.questions;
+    const router = useRouter();
+    const questionId = router.query.q;
+    function setActiveQuestionById(id: string) {
+        setActiveQuestion(questions.find(question => question.id === id) ?? null);
     }
-    console.log(activeQuestion);
+
+    React.useEffect(() => {
+        if (form) {
+            questions = form.questions;
+            if (questionId) {
+                setActiveQuestionById(questionId as string);
+            }
+        }
+    }, [form, questionId]);
+
     return (
         <Dashboard>
             <Sidebar>
@@ -29,7 +40,7 @@ const FormBuilder: React.FC = ({ id }: InferGetServerSidePropsType<typeof getSer
                     onActiveQuestionChange={question => setActiveQuestion(question)}
                 />
             </Sidebar>
-            {activeQuestion && <QuestionBuilderPreview question={activeQuestion} />}
+            {activeQuestion && <QuestionPreview formId={id as string} question={activeQuestion} />}
             {/* <Flowchart /> */}
         </Dashboard>
     );

@@ -1,12 +1,9 @@
 import Question from "./Question";
-import type { TextQuestionType, QuestionType } from "~/types/question-types";
-import type { AddressQuestion as PrimaAddressQuestion } from "@prisma/client";
+import type { QuestionType } from "~/types/question-types";
+import type { Branch, Option, Response, ContactQuestion as PrimaContactQuestion } from "@prisma/client";
 import { nanoid } from "nanoid";
-import { type Branch } from "./Branch";
-import { type Option } from "./Option";
-import { type Response } from "./Response";
 
-class AddressQuestion extends Question implements PrimaAddressQuestion {
+export class ContactQuestion extends Question implements PrimaContactQuestion {
     id: string;
     formId: string;
     type: QuestionType;
@@ -18,28 +15,29 @@ class AddressQuestion extends Question implements PrimaAddressQuestion {
     category: string;
     visible: boolean;
     imageUrl: string;
-    imageFit: string;
+    imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
+    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
     responses: Response[];
     questionId: string;
-    line1Required: boolean;
-    line2Required: boolean;
-    cityRequired: boolean;
-    stateRequired: boolean;
-    zipRequired: boolean;
-    countryRequired: boolean;
+
+    firstNameRequired: boolean;
+    lastNameRequired: boolean;
+    emailRequired: boolean;
+    phoneRequired: boolean;
+    companyRequired: boolean;
 
     constructor(
         formId: string,
         lastQuestionIndex: number,
-        line1Required = false,
-        line2Required = false,
-        cityRequired = false,
-        stateRequired = false,
-        zipRequired = false,
-        countryRequired = false,
+        firstNameRequired = false,
+        lastNameRequired = false,
+        emailRequired = false,
+        phoneRequired = false,
+        companyRequired = false,
         text = "...",
         required = false,
         description = "",
@@ -47,20 +45,14 @@ class AddressQuestion extends Question implements PrimaAddressQuestion {
         category = "",
         visible = true,
         imageUrl = "",
-        imageFit = "",
+        imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
     ) {
         super();
         this.id = nanoid();
-        this.type = "address";
+        this.questionId = this.id;
+        this.type = "contact";
         this.formId = formId;
         this.order = lastQuestionIndex + 1;
-        this.questionId = this.id;
-        this.line1Required = line1Required;
-        this.line2Required = line2Required;
-        this.cityRequired = cityRequired;
-        this.stateRequired = stateRequired;
-        this.zipRequired = zipRequired;
-        this.countryRequired = countryRequired;
         this.text = text;
         this.description = description;
         this.alias = alias;
@@ -73,7 +65,11 @@ class AddressQuestion extends Question implements PrimaAddressQuestion {
         this.branches = [];
         this.options = [];
         this.targets = [];
+
+        this.firstNameRequired = firstNameRequired;
+        this.lastNameRequired = lastNameRequired;
+        this.emailRequired = emailRequired;
+        this.phoneRequired = phoneRequired;
+        this.companyRequired = companyRequired;
     }
 }
-
-export default AddressQuestion;

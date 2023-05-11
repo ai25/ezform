@@ -1,77 +1,65 @@
 import React from "react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { useDrag, useDrop } from "react-dnd";
-import FormBuilderQuestion from "./FormBuilderQuestion";
-import type Question from "~/questions/Question";
+import { Card, Button } from "antd";
+import { Draggable } from "react-beautiful-dnd";
+import QuestionTag from "./QuestionTag";
+import { useRouter } from "next/router";
+import { FaTrash } from "react-icons/fa";
+import { MdDragIndicator } from "react-icons/md";
+import Link from "next/link";
+import { usePreferencesStore } from "../store/preferences";
+import type Question from "~/models/Question";
+import useBuilderStore from "~/store/builder-store";
+import { type TextQuestion } from "../models/TextQuestion";
+import { type QuestionType } from "../types/question-types";
+
 interface FormBuilderQuestionProps {
     question: Question;
-    onTitleUpdate: (question: Question, text: string) => void;
 }
 
 interface DraggableFormBuilderQuestionProps extends FormBuilderQuestionProps {
     index: number;
-    moveQuestion: (dragIndex: number, hoverIndex: number) => void;
-    onSelected: (question: Question) => void;
 }
 
-interface DragItem {
-    type: string;
-    id: string;
-    index: number;
-}
+const DraggableFormBuilderQuestion: React.FC<DraggableFormBuilderQuestionProps> = ({ question, index }) => {
+    const { deleteQuestion } = useBuilderStore();
+    const router = useRouter();
+    const isActive = router.query.q === question.id;
+    const { theme } = usePreferencesStore();
 
-const DraggableFormBuilderQuestion: React.FC<DraggableFormBuilderQuestionProps> = ({
-    question,
-    onTitleUpdate,
-    index,
-    moveQuestion,
-    onSelected,
-}) => {
-    const ref = React.useRef<HTMLDivElement | null>(null);
+    function removeQuestion() {
+        deleteQuestion(question.formId, question.id);
+    }
 
-    const [, drop] = useDrop({
-        accept: "question",
-        hover(item: DragItem, monitor) {
-            if (!ref.current) {
-                return;
-            }
-            const dragIndex = item.index;
-            const hoverIndex = index;
-
-            if (dragIndex === hoverIndex) return;
-
-            const hoverBoundingRect = ref.current.getBoundingClientRect();
-            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-            const clientOffset = monitor.getClientOffset();
-            const hoverClientY = clientOffset!.y - hoverBoundingRect.top;
-
-            if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
-            if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
-
-            moveQuestion(dragIndex, hoverIndex);
-            item.index = hoverIndex;
-        },
-    });
-
-    const [{ isDragging }, drag] = useDrag({
-        type: "question",
-        item: { type: "question", id: question.id, index },
-        collect: monitor => ({ isDragging: monitor.isDragging() }),
-    });
-
-    drag(drop(ref));
-
-    const opacity = isDragging ? 0 : 1;
+    const backgroundColor = isActive ? theme.active : theme.background;
 
     return (
-        <div onSelect={() => onSelected(question)} ref={ref} style={{ opacity }} className="cursor-grab">
-            <FormBuilderQuestion
-                question={question}
-                onTitleUpdate={(text: string) => onTitleUpdate(question, text)}
-                key={question.id}
-            />
-        </div>
+        <Draggable draggableId={question.id} index={index}>
+            {(provided, snapshot) => (
+                <Link href={`/builder/${question.formId}?q=${question.id}`}>
+                    <Card
+                        bodyStyle={{ backgroundColor, borderRadius: "0.4rem" }}
+                        className="select-none"
+                        size="small"
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        style={{
+                            ...provided.draggableProps.style,
+                            opacity: snapshot.isDragging ? 0.5 : 1,
+                        }}
+                    >
+                        <div className="flex items-center justify-between gap-1">
+                            {question.order}
+                            <QuestionTag type={((question as TextQuestion).subType as QuestionType) ?? question.type} />
+                            <div className={`flex-1 select-text truncate px-2`}>{question.text}</div>
+                            <Button onClick={removeQuestion} type="link" icon={<FaTrash />} />
+                            <div {...provided.dragHandleProps} className="cursor-grab">
+                                <MdDragIndicator className="text-xl" />
+                            </div>
+                        </div>
+                    </Card>
+                </Link>
+            )}
+        </Draggable>
     );
 };
 

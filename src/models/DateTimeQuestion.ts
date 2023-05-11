@@ -1,9 +1,9 @@
 import Question from "./Question";
 import type { QuestionType } from "~/types/question-types";
-import type { Branch, Option, Response, RankingQuestion as PrimaRankingQuestion } from "@prisma/client";
+import type { Branch, Option, Response, DateTimeQuestion as PrimaDateTimeQuestion } from "@prisma/client";
 import { nanoid } from "nanoid";
 
-export class RankingQuestion extends Question implements PrimaRankingQuestion {
+export class DateTimeQuestion extends Question implements PrimaDateTimeQuestion {
     id: string;
     formId: string;
     type: QuestionType;
@@ -15,17 +15,21 @@ export class RankingQuestion extends Question implements PrimaRankingQuestion {
     category: string;
     visible: boolean;
     imageUrl: string;
-    imageFit: string;
+    imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
+    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
     responses: Response[];
     questionId: string;
 
+    includeTime: boolean;
+
     constructor(
         formId: string,
         lastQuestionIndex: number,
-        options: Option[] = [],
+        includeTime = false,
         text = "...",
         required = false,
         description = "",
@@ -33,12 +37,12 @@ export class RankingQuestion extends Question implements PrimaRankingQuestion {
         category = "",
         visible = true,
         imageUrl = "",
-        imageFit = "",
+        imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
     ) {
         super();
         this.id = nanoid();
         this.questionId = this.id;
-        this.type = "ranking";
+        this.type = "date";
         this.formId = formId;
         this.order = lastQuestionIndex + 1;
         this.text = text;
@@ -51,8 +55,9 @@ export class RankingQuestion extends Question implements PrimaRankingQuestion {
         this.required = required;
         this.responses = [];
         this.branches = [];
+        this.options = [];
         this.targets = [];
 
-        this.options = options;
+        this.includeTime = includeTime;
     }
 }

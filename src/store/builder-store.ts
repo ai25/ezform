@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type Question from "~/questions/Question";
-import { type Branch } from "../questions/Branch";
-import { type Form } from "../questions/Form";
-import { type Option } from "../questions/Option";
+import type Question from "~/models/Question";
+import { type Branch } from "../models/Branch";
+import { type Form } from "../models/Form";
+import { type Option } from "../models/Option";
 
 interface BuilderState {
     currentFormId: string | null;
@@ -56,14 +56,28 @@ const useBuilderStore = create<BuilderState>()(
                             : form,
                     ),
                 })),
-            deleteQuestion: (formId, questionId) =>
+            deleteQuestion: (formId, questionId) => {
                 set(state => ({
                     forms: state.forms.map(form =>
                         form.id === formId
                             ? { ...form, questions: form.questions.filter(question => question.id !== questionId) }
                             : form,
                     ),
-                })),
+                }));
+                set(state => ({
+                    forms: state.forms.map(form =>
+                        form.id === formId
+                            ? {
+                                  ...form,
+                                  questions: form.questions.map((question, index) => ({
+                                      ...question,
+                                      order: index + 1,
+                                  })),
+                              }
+                            : form,
+                    ),
+                }));
+            },
             addOption: (formId, questionId, option) =>
                 set(state => ({
                     forms: state.forms.map(form =>

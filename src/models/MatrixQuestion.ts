@@ -1,9 +1,16 @@
 import Question from "./Question";
 import type { QuestionType } from "~/types/question-types";
-import type { Branch, Option, Response, ContactQuestion as PrimaContactQuestion } from "@prisma/client";
+import type {
+    Branch,
+    Option,
+    Response,
+    MatrixQuestion as PrimaMatrixQuestion,
+    Row as PrimaRow,
+    Column as PrimaColumn,
+} from "@prisma/client";
 import { nanoid } from "nanoid";
 
-export class ContactQuestion extends Question implements PrimaContactQuestion {
+export class MatrixQuestion extends Question implements PrimaMatrixQuestion {
     id: string;
     formId: string;
     type: QuestionType;
@@ -15,27 +22,23 @@ export class ContactQuestion extends Question implements PrimaContactQuestion {
     category: string;
     visible: boolean;
     imageUrl: string;
-    imageFit: string;
+    imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
+    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
     responses: Response[];
     questionId: string;
 
-    firstNameRequired: boolean;
-    lastNameRequired: boolean;
-    emailRequired: boolean;
-    phoneRequired: boolean;
-    companyRequired: boolean;
+    rows: Row[];
+    columns: Column[];
 
     constructor(
         formId: string,
         lastQuestionIndex: number,
-        firstNameRequired = false,
-        lastNameRequired = false,
-        emailRequired = false,
-        phoneRequired = false,
-        companyRequired = false,
+        rows: Row[] = [],
+        columns: Column[] = [],
         text = "...",
         required = false,
         description = "",
@@ -43,12 +46,12 @@ export class ContactQuestion extends Question implements PrimaContactQuestion {
         category = "",
         visible = true,
         imageUrl = "",
-        imageFit = "",
+        imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
     ) {
         super();
         this.id = nanoid();
         this.questionId = this.id;
-        this.type = "contact";
+        this.type = "matrix";
         this.formId = formId;
         this.order = lastQuestionIndex + 1;
         this.text = text;
@@ -64,10 +67,31 @@ export class ContactQuestion extends Question implements PrimaContactQuestion {
         this.options = [];
         this.targets = [];
 
-        this.firstNameRequired = firstNameRequired;
-        this.lastNameRequired = lastNameRequired;
-        this.emailRequired = emailRequired;
-        this.phoneRequired = phoneRequired;
-        this.companyRequired = companyRequired;
+        this.rows = rows;
+        this.columns = columns;
+    }
+}
+
+export class Row implements PrimaRow {
+    id: string;
+    text: string;
+    matrixQuestionId: string;
+
+    constructor(text: string, matrixQuestionId: string) {
+        this.id = nanoid();
+        this.text = text;
+        this.matrixQuestionId = matrixQuestionId;
+    }
+}
+
+export class Column implements PrimaColumn {
+    id: string;
+    text: string;
+    matrixQuestionId: string;
+
+    constructor(text: string, matrixQuestionId: string) {
+        this.id = nanoid();
+        this.text = text;
+        this.matrixQuestionId = matrixQuestionId;
     }
 }

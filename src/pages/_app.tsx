@@ -8,8 +8,6 @@ import { ThemeProvider } from "~/hooks/theme";
 import * as nextI18nConfig from "../../next-i18next.config.js";
 import "~/styles/globals.css";
 import { appWithTranslation, useTranslation } from "next-i18next";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 
 const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
     const { i18n } = useTranslation();
@@ -21,9 +19,7 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
     return (
         <SessionProvider session={session}>
             <ThemeProvider>
-                <DndProvider backend={HTML5Backend}>
-                    <Component {...pageProps} />
-                </DndProvider>
+                <Component {...pageProps} />
             </ThemeProvider>
         </SessionProvider>
     );

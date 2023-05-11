@@ -1,9 +1,9 @@
 import Question from "./Question";
 import type { QuestionType } from "~/types/question-types";
-import type { Branch, Option, Response, DropdownQuestion as PrimaDropdownQuestion } from "@prisma/client";
+import type { Branch, Option, Response, RankingQuestion as PrimaRankingQuestion } from "@prisma/client";
 import { nanoid } from "nanoid";
 
-export class DropdownQuestion extends Question implements PrimaDropdownQuestion {
+export class RankingQuestion extends Question implements PrimaRankingQuestion {
     id: string;
     formId: string;
     type: QuestionType;
@@ -15,20 +15,19 @@ export class DropdownQuestion extends Question implements PrimaDropdownQuestion 
     category: string;
     visible: boolean;
     imageUrl: string;
-    imageFit: string;
+    imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
+    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
     responses: Response[];
     questionId: string;
 
-    sort: string | null;
-
     constructor(
         formId: string,
         lastQuestionIndex: number,
         options: Option[] = [],
-        sort: string | null = null,
         text = "...",
         required = false,
         description = "",
@@ -36,12 +35,12 @@ export class DropdownQuestion extends Question implements PrimaDropdownQuestion 
         category = "",
         visible = true,
         imageUrl = "",
-        imageFit = "",
+        imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
     ) {
         super();
         this.id = nanoid();
         this.questionId = this.id;
-        this.type = "dropdown";
+        this.type = "ranking";
         this.formId = formId;
         this.order = lastQuestionIndex + 1;
         this.text = text;
@@ -57,6 +56,5 @@ export class DropdownQuestion extends Question implements PrimaDropdownQuestion 
         this.targets = [];
 
         this.options = options;
-        this.sort = sort;
     }
 }
