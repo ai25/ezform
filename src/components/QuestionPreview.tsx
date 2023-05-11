@@ -17,7 +17,6 @@ interface QuestionPreviewProps {
 }
 
 const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) => {
-    const { updateQuestion } = useBuilderStore();
     const [showEditor, setShowEditor] = React.useState(true);
     const [aspectRatio, setAspectRatio] = React.useState<"video" | "tablet" | "phone">("video");
     const imageSize = React.useMemo(() => {
