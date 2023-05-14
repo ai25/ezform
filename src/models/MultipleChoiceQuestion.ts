@@ -17,7 +17,7 @@ class MultipleChoiceQuestion extends Question implements PrismaMultipleChoiceQue
     imageUrl: string;
     imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
-    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imagePosition: "left" | "center" | "right";
     imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
@@ -41,6 +41,7 @@ class MultipleChoiceQuestion extends Question implements PrismaMultipleChoiceQue
         visible = true,
         imageUrl = "",
         imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
+        imagePosition: "left" | "center" | "right" = "left",
     ) {
         super();
         this.allowMultiple = false;
@@ -61,6 +62,7 @@ class MultipleChoiceQuestion extends Question implements PrismaMultipleChoiceQue
         this.visible = visible;
         this.imageUrl = imageUrl;
         this.imageFit = imageFit;
+        this.imagePosition = imagePosition;
         this.required = required;
         this.responses = [];
         this.branches = [];

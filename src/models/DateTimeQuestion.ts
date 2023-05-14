@@ -17,7 +17,7 @@ export class DateTimeQuestion extends Question implements PrimaDateTimeQuestion 
     imageUrl: string;
     imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
-    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imagePosition: "left" | "center" | "right";
     imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
@@ -38,6 +38,7 @@ export class DateTimeQuestion extends Question implements PrimaDateTimeQuestion 
         visible = true,
         imageUrl = "",
         imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
+        imagePosition: "left" | "center" | "right" = "left",
     ) {
         super();
         this.id = nanoid();
@@ -52,6 +53,7 @@ export class DateTimeQuestion extends Question implements PrimaDateTimeQuestion 
         this.visible = visible;
         this.imageUrl = imageUrl;
         this.imageFit = imageFit;
+        this.imagePosition = imagePosition;
         this.required = required;
         this.responses = [];
         this.branches = [];

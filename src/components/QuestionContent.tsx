@@ -39,7 +39,7 @@ const QuestionContent: React.FC<PropsWithChildren<QuestionContentProps>> = ({ qu
                 <input
                     type="text"
                     style={style.description}
-                    className="flex w-fit items-center justify-center p-2 text-center "
+                    className="flex max-w-full items-center justify-center p-2 text-center "
                     value={question.description}
                     placeholder="Description (optional)"
                     onChange={e => updateQuestion(question.formId, question.id, { description: e.target.value })}

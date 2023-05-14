@@ -1,6 +1,6 @@
 import { Button, Layout, Modal } from "antd";
 import Image from "next/image";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, CSSProperties, useMemo } from "react";
 import { FaDesktop, FaPhone, FaTablet } from "react-icons/fa";
 import type Question from "../models/Question";
 import QuestionEditor from "./QuestionEditor";
@@ -11,28 +11,15 @@ import RankingQuestionContent from "./RankingQuestionContent";
 import { type RankingQuestion } from "../models/RankingQuestion";
 import useBuilderStore from "../store/builder-store";
 import { Design } from "~/models/Design";
+import { useStyledElement } from "~/hooks/useStyledElement";
 
 interface QuestionPreviewProps {
     question: Question;
     formId: string;
 }
-
 const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) => {
     const [showEditor, setShowEditor] = React.useState(true);
-    const [aspectRatio, setAspectRatio] = React.useState<"video" | "tablet" | "phone">("video");
     const { forms, updateForm } = useBuilderStore();
-    const imageSize = React.useMemo(() => {
-        switch (question.imageFit) {
-            case "cover":
-                if (question.imagePosition === "center") {
-                    return "w-full h-full absolute top-0 left-0";
-                } else {
-                    return `relative ${aspectRatio === "video" ? "w-2/3 h-full" : "w-full h-2/3"}`;
-                }
-            default:
-                return `relative ${aspectRatio === "video" ? "w-2/3 h-full" : "w-5/6 h-1/2 self-center"}`;
-        }
-    }, [question, aspectRatio]);
     const form = forms[formId];
     const [design, setDesign] = React.useState<Design>(form?.design ?? new Design());
     const questionContent = React.useMemo(() => {
@@ -51,6 +38,7 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) =
             setDesign(form.design ?? new Design());
         }
     }, [form]);
+    const { styles, setAspectRatio } = useStyledElement(question);
 
     const [isImageEditing, setIsImageEditing] = React.useState(false);
     if (!form) return null;
@@ -65,19 +53,8 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) =
             <div className="flex h-full w-full justify-between bg-red-500 ">
                 <div className="flex w-full items-center justify-center bg-green-500 p-2">
                     <div
-                        style={{
-                            aspectRatio: aspectRatio === "video" ? "16/9" : aspectRatio === "tablet" ? "3/4" : "9/16",
-                            flexDirection:
-                                aspectRatio === "video"
-                                    ? question.imagePosition === "left"
-                                        ? "row"
-                                        : "row-reverse"
-                                    : question.imagePosition === "left"
-                                    ? "column"
-                                    : "column-reverse",
-                            backgroundColor: design.backgroundColor,
-                        }}
-                        className={`relative flex h-56 sm:h-96 md:h-[30rem]`}
+                        style={{ ...styles.form, backgroundColor: design.backgroundColor }}
+                        className={`relative flex h-56 justify-evenly sm:h-96 md:h-[30rem]`}
                     >
                         <div
                             style={{
@@ -89,10 +66,11 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) =
                         ></div>
                         <div
                             style={{
+                                ...styles.imageContainer,
                                 objectFit: question.imageFit,
                                 objectPosition: question.imagePosition,
                             }}
-                            className={`${imageSize} ${question.imageUrl ? "" : "hidden"} `}
+                            className={`${question.imageUrl ? "" : "hidden"} `}
                         >
                             <Image
                                 className={` `}
@@ -106,7 +84,9 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) =
                             />
                         </div>
                         {!isImageEditing && (
-                            <div className="z-10 flex h-full w-full items-center justify-center">{questionContent}</div>
+                            <div className="z-10 flex h-full max-w-min items-center justify-center">
+                                {questionContent}
+                            </div>
                         )}
                         {/* <Button onClick={() => setIsImageEditing(!isImageEditing)}>Edit Image</Button> */}
                     </div>

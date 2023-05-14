@@ -20,7 +20,7 @@ class AddressQuestion extends Question implements PrimaAddressQuestion {
     imageUrl: string;
     imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain";
     branches: Branch[];
-    imagePosition?: "left" | "center" | "right" | "fill" | undefined;
+    imagePosition: "left" | "center" | "right";
     imageAltText?: string | undefined;
     options: Option[];
     targets: Branch[];
@@ -50,6 +50,7 @@ class AddressQuestion extends Question implements PrimaAddressQuestion {
         visible = true,
         imageUrl = "",
         imageFit: "contain" | "cover" | "fill" | "none" | "scale-down" = "contain",
+        imagePosition: "left" | "center" | "right" = "left",
     ) {
         super();
         this.id = nanoid();
@@ -75,6 +76,7 @@ class AddressQuestion extends Question implements PrimaAddressQuestion {
         this.branches = [];
         this.options = [];
         this.targets = [];
+        this.imagePosition = imagePosition;
     }
 }
 

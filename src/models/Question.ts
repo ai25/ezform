@@ -29,7 +29,7 @@ abstract class Question implements PrismaQuestion {
     abstract visible: boolean;
     abstract imageUrl: string;
     abstract imageFit: "cover" | "contain" | "fill" | "none" | "scale-down";
-    abstract imagePosition?: "left" | "center" | "right" | "fill";
+    abstract imagePosition: "left" | "center" | "right";
     abstract imageAltText?: string;
     abstract required: boolean;
     abstract responses: Response[];
