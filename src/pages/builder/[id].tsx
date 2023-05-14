@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import { useRouter } from "next/router";
 import { type InferGetServerSidePropsType, type GetServerSideProps } from "next";
 import React from "react";
@@ -14,23 +15,20 @@ import type Question from "~/models/Question";
 
 const FormBuilder: React.FC = ({ id }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const { forms } = useBuilderStore();
-    let questions: Question[] = [];
+    const [questions, setQuestions] = React.useState<Question[]>([]);
     const [activeQuestion, setActiveQuestion] = React.useState<Question | null>(null);
-    const form = forms.find(form => form.id === id);
+    const form = forms[id as string];
     const router = useRouter();
     const questionId = router.query.q;
-    function setActiveQuestionById(id: string) {
-        setActiveQuestion(questions.find(question => question.id === id) ?? null);
-    }
 
     React.useEffect(() => {
         if (form) {
-            questions = form.questions;
+            setQuestions(form.questions);
             if (questionId) {
-                setActiveQuestionById(questionId as string);
+                setActiveQuestion(questions.find(question => question.id === questionId) ?? null);
             }
         }
-    }, [form, questionId]);
+    }, [form, questionId, questions]);
 
     return (
         <Dashboard>
@@ -42,6 +40,13 @@ const FormBuilder: React.FC = ({ id }: InferGetServerSidePropsType<typeof getSer
             </Sidebar>
             {activeQuestion && <QuestionPreview formId={id as string} question={activeQuestion} />}
             {/* <Flowchart /> */}
+            {form?.design?.fontFamily && (
+                <style jsx global>
+                    {`
+                        @import url("https://fonts.googleapis.com/css2?family=${form.design.fontFamily}&display=swap");
+                    `}
+                </style>
+            )}
         </Dashboard>
     );
 };

@@ -23,9 +23,9 @@ const Workspace: React.FC<{ id: string }> = ({ id }) => {
 
     return (
         <Content className="p-2">
-            {forms.length > 0 ? (
+            {Object.keys(forms).length > 0 ? (
                 <div className="flex flex-wrap gap-2">
-                    {forms.map((form, index) => (
+                    {Object.values(forms).map((form, index) => (
                         <div key={index} className="flex flex-wrap">
                             <FormItemCard
                                 id={form.id}

@@ -1,6 +1,7 @@
 import { type Form as PrismaForm } from "@prisma/client";
 import { nanoid } from "nanoid";
 import type Question from "./Question";
+import { Design } from "./Design";
 
 export class Form implements PrismaForm {
     id: string;
@@ -10,6 +11,8 @@ export class Form implements PrismaForm {
     createdAt: Date;
     updatedAt: Date;
     questions: Question[];
+    designId: string;
+    design: Design | null;
 
     constructor(userId: string, title = "Untitled Form", description = "") {
         this.id = nanoid(8);
@@ -19,5 +22,7 @@ export class Form implements PrismaForm {
         this.createdAt = new Date();
         this.updatedAt = new Date();
         this.questions = [];
+        this.design = new Design();
+        this.designId = this.design.id;
     }
 }

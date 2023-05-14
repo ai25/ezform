@@ -69,8 +69,8 @@ model Form {
     userId      String
     questions   Question[]
     responses   Response[]
-    theme       Theme      @relation(fields: [themeId], references: [id])
-    themeId     String     @unique
+    design      Design     @relation(fields: [designId], references: [id])
+    designId    String     @unique
 }
 
 model Question {
@@ -253,7 +253,7 @@ model Response {
     updatedAt  DateTime
 }
 
-model Theme {
+model Design {
     id              String   @id @default(cuid())
     name            String
     fontFamily      String

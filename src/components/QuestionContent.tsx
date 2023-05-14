@@ -1,24 +1,28 @@
 import React, { type PropsWithChildren } from "react";
 import useBuilderStore from "~/store/builder-store";
 import type Question from "../models/Question";
+import { type Design } from "../models/Design";
 
 interface QuestionContentProps {
     question: Question;
+    design: Design;
 }
 
-const QuestionContent: React.FC<PropsWithChildren<QuestionContentProps>> = ({ question, children }) => {
+const QuestionContent: React.FC<PropsWithChildren<QuestionContentProps>> = ({ question, children, design }) => {
     const { updateQuestion } = useBuilderStore();
 
     const style: Record<string, React.CSSProperties> = {
         text: {
-            fontSize: "1.5rem",
+            fontSize: design.fontSize,
             fontWeight: 500,
-            color: "#333",
+            color: design.textColor,
+            fontFamily: design.fontFamily,
         },
         description: {
-            fontSize: "1rem",
+            fontSize: design.fontSize - 2,
             fontWeight: 400,
-            color: "#555",
+            color: design.textColor,
+            fontFamily: design.fontFamily,
         },
     };
 

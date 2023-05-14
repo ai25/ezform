@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import React, { useState } from "react";
-import { Card, Dropdown, Menu, Spin, type MenuProps } from "antd";
+import { Card, Dropdown, Menu, Spin, type MenuProps, message } from "antd";
 import { FiExternalLink, FiCopy, FiShare2, FiEdit, FiCopy as FiCopy2, FiTrash, FiMoreHorizontal } from "react-icons/fi";
 import Image from "next/image";
 import dayjs from "dayjs";
@@ -8,6 +9,7 @@ import Link from "next/link";
 import { useTranslation } from "next-i18next";
 
 import { usePreferencesStore } from "../store/preferences";
+import useBuilderStore from "~/store/builder-store";
 
 dayjs.extend(relativeTime);
 
@@ -22,7 +24,9 @@ const FormItemCard: React.FC<FormItemCardProps> = ({ id, title, imageUrl, worksp
     const [opened, setOpened] = useState<string | null>(null);
     const [fromNow, setFromNow] = useState("Never");
     const { theme } = usePreferencesStore();
+    const { deleteForm } = useBuilderStore();
     const { t } = useTranslation(["common"]);
+    const [messageApi, contextHolder] = message.useMessage();
 
     React.useEffect(() => {
         if (!opened) return;
@@ -53,31 +57,56 @@ const FormItemCard: React.FC<FormItemCardProps> = ({ id, title, imageUrl, worksp
     }
 
     const items: MenuProps["items"] = [
-        getItem(t("common:open"), `${id}-1`, <FiExternalLink />),
-        getItem(t("common:copy_link"), `${id}-2`, <FiCopy />),
-        getItem(t("common:share"), `${id}-3`, <FiShare2 />),
+        getItem(t("common:open"), `${id}-open`, <FiExternalLink />),
+        getItem(t("common:copy_link"), `${id}-copy_link`, <FiCopy />),
+        getItem(t("common:share"), `${id}-share`, <FiShare2 />),
         { type: "divider" },
-        getItem(t("common:edit"), `${id}-4`, <FiEdit />),
-        getItem(t("common:duplicate"), `${id}-5`, <FiCopy2 />),
+        getItem(t("common:edit"), `${id}-edit`, <FiEdit />),
+        getItem(t("common:duplicate"), `${id}-duplicate`, <FiCopy2 />),
         getItem(
             t("common:copy_to"),
-            `${id}-6`,
+            `${id}-copy_to`,
             null,
             workspaceNames.map((name, index) => getItem(name, `${id}-6-${index}`)),
         ),
         getItem(
             t("common:move_to"),
-            `${id}-7`,
+            `${id}-move_to`,
             null,
             workspaceNames.map((name, index) => getItem(name, `${id}-7-${index}`)),
         ),
         { type: "divider" },
-        getItem(t("common:delete"), `${id}-8`, <FiTrash />, undefined, undefined, true),
+        getItem(t("common:delete"), `${id}-delete`, <FiTrash />, undefined, undefined, true),
     ];
     const menu: MenuProps = {
         items,
-        onClick: ({ key }) => {
-            console.log(key);
+        onClick: ({ keyPath }) => {
+            const key = keyPath[0];
+            switch (key) {
+                case `${id}-open`:
+                    window.open(`/builder/${id}`);
+                    break;
+                case `${id}-copy_link`:
+                    navigator.clipboard
+                        .writeText(`${window.location.origin}/builder/${id}`)
+                        .then(() => messageApi.success(t("common:copied_to_clipboard")))
+                        .catch(() => messageApi.error(t("common:failed_to_copy_to_clipboard")));
+                    break;
+                case `${id}-share`:
+                    break;
+                case `${id}-edit`:
+                    window.open(`/builder/${id}`);
+                    break;
+                case `${id}-duplicate`:
+                    break;
+                case `${id}-copy_to`:
+                    break;
+                case `${id}-move_to`:
+                    break;
+                case `${id}-delete`:
+                    deleteForm(id);
+                    break;
+            }
         },
     };
 
@@ -101,8 +130,8 @@ const FormItemCard: React.FC<FormItemCardProps> = ({ id, title, imageUrl, worksp
             }
             className="relative"
         >
+            {contextHolder}
             <div className="flex items-center justify-between">
-                <span className="text-xs">Opened: {fromNow}</span>
                 <Dropdown menu={menu} trigger={["click"]}>
                     <FiMoreHorizontal className="cursor-pointer text-lg" />
                 </Dropdown>

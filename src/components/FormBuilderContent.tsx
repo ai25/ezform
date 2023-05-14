@@ -26,12 +26,11 @@ interface FormBuilderContentProps {
 
 const FormBuilderContent: React.FC<FormBuilderContentProps> = ({ formId, onActiveQuestionChange }) => {
     const { forms, addQuestion, updateQuestion, updateForm } = useBuilderStore();
-    const form = forms?.find(form => form.id === formId);
+    const form = forms[formId];
     const { t } = useTranslation(["common", "builder", "sidebar"]);
 
     function handleAddQuestion(type: QuestionType) {
         if (!form) return;
-        if (!formId) return;
         switch (type) {
             case "text":
                 addQuestion(formId, new TextQuestion("text", formId, form.questions.length));

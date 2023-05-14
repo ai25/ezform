@@ -1,8 +1,8 @@
-import type { Theme as PrismaTheme } from "@prisma/client";
+import type { Design as PrismaDesign } from "@prisma/client";
 import type { Form } from "./Form";
 import { nanoid } from "nanoid";
 
-export class Theme implements PrismaTheme {
+export class Design implements PrismaDesign {
     id: string;
     name: string;
     fontFamily: string;

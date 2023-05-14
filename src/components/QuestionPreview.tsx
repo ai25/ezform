@@ -1,8 +1,7 @@
 import { Button, Layout, Modal } from "antd";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { FaDesktop, FaPhone, FaTablet } from "react-icons/fa";
-import useBuilderStore from "~/store/builder-store";
 import type Question from "../models/Question";
 import QuestionEditor from "./QuestionEditor";
 import { BsPhoneFill } from "react-icons/bs";
@@ -10,6 +9,8 @@ import QuestionContent from "./QuestionContent";
 import { type TextQuestion } from "../models/TextQuestion";
 import RankingQuestionContent from "./RankingQuestionContent";
 import { type RankingQuestion } from "../models/RankingQuestion";
+import useBuilderStore from "../store/builder-store";
+import { Design } from "~/models/Design";
 
 interface QuestionPreviewProps {
     question: Question;
@@ -19,6 +20,7 @@ interface QuestionPreviewProps {
 const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) => {
     const [showEditor, setShowEditor] = React.useState(true);
     const [aspectRatio, setAspectRatio] = React.useState<"video" | "tablet" | "phone">("video");
+    const { forms, updateForm } = useBuilderStore();
     const imageSize = React.useMemo(() => {
         switch (question.imageFit) {
             case "cover":
@@ -31,18 +33,31 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) =
                 return `relative ${aspectRatio === "video" ? "w-2/3 h-full" : "w-5/6 h-1/2 self-center"}`;
         }
     }, [question, aspectRatio]);
+    const form = forms[formId];
+    const [design, setDesign] = React.useState<Design>(form?.design ?? new Design());
     const questionContent = React.useMemo(() => {
         switch (question.type) {
             case "text":
-                return <QuestionContent question={question as TextQuestion} />;
+                return <QuestionContent design={design} question={question as TextQuestion} />;
             case "ranking":
-                return <RankingQuestionContent question={question as RankingQuestion} />;
+                return <RankingQuestionContent design={design} question={question as RankingQuestion} />;
 
             default:
                 return null;
         }
-    }, [question]);
+    }, [question, design]);
+    useEffect(() => {
+        if (form) {
+            setDesign(form.design ?? new Design());
+        }
+    }, [form]);
+
     const [isImageEditing, setIsImageEditing] = React.useState(false);
+    if (!form) return null;
+    if (!form.design) {
+        updateForm(formId, { design: design });
+        return null;
+    }
     const progress = 67;
 
     return (
@@ -60,19 +75,24 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) =
                                     : question.imagePosition === "left"
                                     ? "column"
                                     : "column-reverse",
+                            backgroundColor: design.backgroundColor,
                         }}
-                        className={`relative flex h-56 bg-fuchsia-500 sm:h-96 md:h-[30rem]`}
+                        className={`relative flex h-56 sm:h-96 md:h-[30rem]`}
                     >
                         <div
-                            style={{ width: `${progress}%` }}
-                            className="absolute left-0 top-0 z-20 h-1 bg-orange-600"
+                            style={{
+                                width: `${progress}%`,
+                                backgroundColor: design.buttonColor,
+                                borderRadius: design.borderRadius,
+                            }}
+                            className="absolute left-0 top-0 z-20 h-1 "
                         ></div>
                         <div
                             style={{
                                 objectFit: question.imageFit,
                                 objectPosition: question.imagePosition,
                             }}
-                            className={`${imageSize} ${question.imageUrl ? "" : "hidden"} bg-yellow-500`}
+                            className={`${imageSize} ${question.imageUrl ? "" : "hidden"} `}
                         >
                             <Image
                                 className={` `}
@@ -88,7 +108,7 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) =
                         {!isImageEditing && (
                             <div className="z-10 flex h-full w-full items-center justify-center">{questionContent}</div>
                         )}
-                        <Button onClick={() => setIsImageEditing(!isImageEditing)}>Edit Image</Button>
+                        {/* <Button onClick={() => setIsImageEditing(!isImageEditing)}>Edit Image</Button> */}
                     </div>
                 </div>
                 <div className="relative h-1 w-0 bg-red-500">

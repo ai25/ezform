@@ -7,12 +7,14 @@ import { Option } from "../models/Option";
 import DraggableOption from "./DraggableOption";
 import { StrictModeDroppable } from "./StrictModeDroppable";
 import QuestionContent from "./QuestionContent";
+import { type Design } from "../models/Design";
 
 interface RankingQuestionContentProps {
     question: RankingQuestion;
+    design: Design;
 }
 
-const RankingQuestionContent: React.FC<RankingQuestionContentProps> = ({ question }) => {
+const RankingQuestionContent: React.FC<RankingQuestionContentProps> = ({ question, design }) => {
     const { updateQuestion, updateOption, deleteOption } = useBuilderStore();
 
     const moveOption = (sourceIndex: number, destinationIndex: number | undefined) => {
@@ -32,7 +34,7 @@ const RankingQuestionContent: React.FC<RankingQuestionContentProps> = ({ questio
     };
 
     return (
-        <QuestionContent question={question}>
+        <QuestionContent design={design} question={question}>
             <DragDropContext onDragEnd={result => moveOption(result.source.index, result.destination?.index)}>
                 <StrictModeDroppable droppableId={`options-${question.id}`} type="option">
                     {provided => (

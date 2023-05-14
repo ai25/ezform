@@ -4,11 +4,10 @@ import type Question from "~/models/Question";
 import { type Branch } from "../models/Branch";
 import { type Form } from "../models/Form";
 import { type Option } from "../models/Option";
+import { Design } from "../models/Design";
 
 interface BuilderState {
-    currentFormId: string | null;
-    setCurrentFormId: (formId: string) => void;
-    forms: Form[];
+    forms: Record<string, Form>;
     addForm: (form: Form) => void;
     updateForm: (formId: string, updatedForm: Partial<Form>) => void;
     deleteForm: (formId: string) => void;
@@ -26,168 +25,130 @@ interface BuilderState {
 const useBuilderStore = create<BuilderState>()(
     persist(
         (set, get) => ({
-            currentFormId: null,
-            setCurrentFormId: (formId: string) => set({ currentFormId: formId }),
-            forms: [],
-            addForm(form) {
-                set(state => ({ forms: [...state.forms, form] }));
-            },
+            forms: {},
+            addForm: form => set(state => ({ forms: { ...state.forms, [form.id]: form } })),
             updateForm: (formId, updatedForm) =>
                 set(state => ({
-                    forms: state.forms.map(form => (form.id === formId ? { ...form, ...updatedForm } : form)),
+                    forms: { ...state.forms, [formId]: { ...state.forms[formId]!, ...updatedForm } },
                 })),
-            deleteForm: formId => set(state => ({ forms: state.forms.filter(form => form.id !== formId) })),
+            deleteForm: formId =>
+                set(state => {
+                    const { [formId]: _, ...remainingForms } = state.forms;
+                    return { forms: remainingForms };
+                }),
             addQuestion: (formId, question) =>
                 set(state => ({
-                    forms: state.forms.map(form =>
-                        form.id === formId ? { ...form, questions: [...form.questions, question] } : form,
-                    ),
+                    forms: {
+                        ...state.forms,
+                        [formId]: {
+                            ...state.forms[formId]!,
+                            questions: [...state.forms[formId]!.questions, question],
+                        },
+                    },
                 })),
             updateQuestion: (formId, questionId, updatedQuestion) =>
-                set(state => ({
-                    forms: state.forms.map(form =>
-                        form.id === formId
-                            ? {
-                                  ...form,
-                                  questions: form.questions.map(question =>
-                                      question.id === questionId ? { ...question, ...updatedQuestion } : question,
-                                  ),
-                              }
-                            : form,
-                    ),
-                })),
-            deleteQuestion: (formId, questionId) => {
-                set(state => ({
-                    forms: state.forms.map(form =>
-                        form.id === formId
-                            ? { ...form, questions: form.questions.filter(question => question.id !== questionId) }
-                            : form,
-                    ),
-                }));
-                set(state => ({
-                    forms: state.forms.map(form =>
-                        form.id === formId
-                            ? {
-                                  ...form,
-                                  questions: form.questions.map((question, index) => ({
-                                      ...question,
-                                      order: index + 1,
-                                  })),
-                              }
-                            : form,
-                    ),
-                }));
-            },
+                set(state => {
+                    const updatedQuestions = state.forms[formId]!.questions.map(question =>
+                        question.id === questionId ? { ...question, ...updatedQuestion } : question,
+                    );
+                    return {
+                        forms: { ...state.forms, [formId]: { ...state.forms[formId]!, questions: updatedQuestions } },
+                    };
+                }),
+            deleteQuestion: (formId, questionId) =>
+                set(state => {
+                    const remainingQuestions = state.forms[formId]!.questions.filter(
+                        question => question.id !== questionId,
+                    );
+                    return {
+                        forms: { ...state.forms, [formId]: { ...state.forms[formId]!, questions: remainingQuestions } },
+                    };
+                }),
             addOption: (formId, questionId, option) =>
-                set(state => ({
-                    forms: state.forms.map(form =>
-                        form.id === formId
-                            ? {
-                                  ...form,
-                                  questions: form.questions.map(question =>
-                                      question.id === questionId
-                                          ? { ...question, options: [...question.options, option] }
-                                          : question,
-                                  ),
-                              }
-                            : form,
-                    ),
-                })),
+                set(state => {
+                    const updatedQuestions = state.forms[formId]!.questions.map(question =>
+                        question.id === questionId ? { ...question, options: [...question.options, option] } : question,
+                    );
+                    return {
+                        forms: { ...state.forms, [formId]: { ...state.forms[formId]!, questions: updatedQuestions } },
+                    };
+                }),
             updateOption: (formId, questionId, optionId, updatedOption) =>
-                set(state => ({
-                    forms: state.forms.map(form =>
-                        form.id === formId
+                set(state => {
+                    const updatedQuestions = state.forms[formId]!.questions.map(question =>
+                        question.id === questionId
                             ? {
-                                  ...form,
-                                  questions: form.questions.map(question =>
-                                      question.id === questionId
-                                          ? {
-                                                ...question,
-                                                options: question.options.map(option =>
-                                                    option.id === optionId ? { ...option, ...updatedOption } : option,
-                                                ),
-                                            }
-                                          : question,
+                                  ...question,
+                                  options: question.options.map(option =>
+                                      option.id === optionId ? { ...option, ...updatedOption } : option,
                                   ),
                               }
-                            : form,
-                    ),
-                })),
+                            : question,
+                    );
+                    return {
+                        forms: { ...state.forms, [formId]: { ...state.forms[formId]!, questions: updatedQuestions } },
+                    };
+                }),
             deleteOption: (formId, questionId, optionId) =>
-                set(state => ({
-                    forms: state.forms.map(form =>
-                        form.id === formId
+                set(state => {
+                    const updatedQuestions = state.forms[formId]!.questions.map(question =>
+                        question.id === questionId
                             ? {
-                                  ...form,
-                                  questions: form.questions.map(question =>
-                                      question.id === questionId
-                                          ? {
-                                                ...question,
-                                                options: question.options.filter(option => option.id !== optionId),
-                                            }
-                                          : question,
-                                  ),
+                                  ...question,
+                                  options: question.options.filter(option => option.id !== optionId),
                               }
-                            : form,
-                    ),
-                })),
+                            : question,
+                    );
+                    return {
+                        forms: { ...state.forms, [formId]: { ...state.forms[formId]!, questions: updatedQuestions } },
+                    };
+                }),
             addBranch: (formId, questionId, branch) =>
-                set(state => ({
-                    forms: state.forms.map(form =>
-                        form.id === formId
-                            ? {
-                                  ...form,
-                                  questions: form.questions.map(question =>
-                                      question.id === questionId
-                                          ? { ...question, branches: [...question.branches, branch] }
-                                          : question,
-                                  ),
-                              }
-                            : form,
-                    ),
-                })),
+                set(state => {
+                    const updatedQuestions = state.forms[formId]!.questions.map(question =>
+                        question.id === questionId
+                            ? { ...question, branches: [...question.branches, branch] }
+                            : question,
+                    );
+                    return {
+                        forms: { ...state.forms, [formId]: { ...state.forms[formId]!, questions: updatedQuestions } },
+                    };
+                }),
             updateBranch: (formId, questionId, branchId, updatedBranch) =>
-                set(state => ({
-                    forms: state.forms.map(form =>
-                        form.id === formId
+                set(state => {
+                    const updatedQuestions = state.forms[formId]!.questions.map(question =>
+                        question.id === questionId
                             ? {
-                                  ...form,
-                                  questions: form.questions.map(question =>
-                                      question.id === questionId
-                                          ? {
-                                                ...question,
-                                                branches: question.branches.map(branch =>
-                                                    branch.id === branchId ? { ...branch, ...updatedBranch } : branch,
-                                                ),
-                                            }
-                                          : question,
+                                  ...question,
+                                  branches: question.branches.map(branch =>
+                                      branch.id === branchId ? { ...branch, ...updatedBranch } : branch,
                                   ),
                               }
-                            : form,
-                    ),
-                })),
+                            : question,
+                    );
+                    return {
+                        forms: { ...state.forms, [formId]: { ...state.forms[formId]!, questions: updatedQuestions } },
+                    };
+                }),
             deleteBranch: (formId, questionId, branchId) =>
-                set(state => ({
-                    forms: state.forms.map(form =>
-                        form.id === formId
+                set(state => {
+                    const updatedQuestions = state.forms[formId]!.questions.map(question =>
+                        question.id === questionId
                             ? {
-                                  ...form,
-                                  questions: form.questions.map(question =>
-                                      question.id === questionId
-                                          ? {
-                                                ...question,
-                                                branches: question.branches.filter(branch => branch.id !== branchId),
-                                            }
-                                          : question,
-                                  ),
+                                  ...question,
+                                  branches: question.branches.filter(branch => branch.id !== branchId),
                               }
-                            : form,
-                    ),
-                })),
+                            : question,
+                    );
+                    return {
+                        forms: { ...state.forms, [formId]: { ...state.forms[formId]!, questions: updatedQuestions } },
+                    };
+                }),
         }),
         {
             name: "builder-store",
         },
     ),
 );
+
 export default useBuilderStore;
