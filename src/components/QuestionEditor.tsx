@@ -9,6 +9,7 @@ import { Design } from "../models/Design";
 import ColorPickerField from "./ColorPickerField";
 import { usePreferencesStore } from "../store/preferences";
 import FontFaceInput from "./FontFaceInput";
+import FocalPoint from "./FocalPointPicker";
 
 interface QuestionEditorProps {
     question: Question;
@@ -20,6 +21,7 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, formId }) => 
     const { updateQuestion, updateForm, forms } = useBuilderStore();
     const { theme } = usePreferencesStore();
     const form = forms[formId];
+    const [pos, setPos] = React.useState({ x: 0, y: 0 });
     if (!form) return null;
     const { design } = form;
     if (!design) {
@@ -38,15 +40,15 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, formId }) => 
             updateQuestion(formId, question.id, { imageUrl: result });
         };
     };
+    const onPosChange = ({ x, y }: { x: number; y: number }) => {
+        console.log(x, y);
+        setPos({ x, y });
+        updateQuestion(formId, question.id, { imagePosition: `${x}% ${y}%` as "center" });
+    };
 
     return (
-        <ResizableComponent
-            style={{ backgroundColor: theme.background }}
-            className="hidden min-w-0 overflow-hidden p-2 lg:block"
-            axis="x"
-            handlePosition="w"
-        >
-            <div className="flex h-full max-w-fit flex-col gap-2">
+        <div style={{ backgroundColor: theme.background }} className="hidden h-full w-56 overflow-hidden p-2 lg:flex">
+            <div className="flex h-full w-full max-w-full flex-col gap-2">
                 <Button onClick={() => setShowModal(true)}>Select Image</Button>
                 <Modal
                     onOk={() => setShowModal(false)}
@@ -98,8 +100,9 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, formId }) => 
                         }
                     />
                 </div>
+                <FocalPoint src={question.imageUrl} value={pos} onChange={onPosChange} />
             </div>
-        </ResizableComponent>
+        </div>
     );
 };
 

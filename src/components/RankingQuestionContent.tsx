@@ -37,8 +37,12 @@ const RankingQuestionContent: React.FC<RankingQuestionContentProps> = ({ questio
         <QuestionContent design={design} question={question}>
             <DragDropContext onDragEnd={result => moveOption(result.source.index, result.destination?.index)}>
                 <StrictModeDroppable droppableId={`options-${question.id}`} type="option">
-                    {provided => (
-                        <div className="flex flex-col gap-2" ref={provided.innerRef} {...provided.droppableProps}>
+                    {provider => (
+                        <div
+                            className="flex flex-col gap-2 overflow-auto"
+                            ref={provider.innerRef}
+                            {...provider.droppableProps}
+                        >
                             {question.options.map((option, index) => (
                                 <div key={option.id}>
                                     <DraggableOption
@@ -49,7 +53,7 @@ const RankingQuestionContent: React.FC<RankingQuestionContentProps> = ({ questio
                                     />
                                 </div>
                             ))}
-                            {provided.placeholder}
+                            {provider.placeholder}
                         </div>
                     )}
                 </StrictModeDroppable>

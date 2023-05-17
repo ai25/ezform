@@ -14,7 +14,7 @@ const Dashboard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
         <Layout className="h-screen max-w-full overflow-hidden" style={{ color: theme.text }}>
             <Header />
-            <Layout className="max-w-full overflow-hidden md:flex-row">{children}</Layout>
+            <Layout className="flex max-w-full overflow-hidden md:flex-row">{children}</Layout>
         </Layout>
     );
 };

@@ -47,10 +47,12 @@ const ASPECT_RATIO_CONFIG: Config = {
                 left: {
                     flexDirection: "row",
                     aspectRatio: "16/9",
+                    width: "100%",
                 },
                 default: {
                     flexDirection: "row-reverse",
                     aspectRatio: "16/9",
+                    width: "100%",
                 },
             },
         },
@@ -82,10 +84,12 @@ const ASPECT_RATIO_CONFIG: Config = {
                 left: {
                     flexDirection: "column",
                     aspectRatio: "3/4",
+                    height: "100%",
                 },
                 default: {
                     flexDirection: "column-reverse",
                     aspectRatio: "3/4",
+                    height: "100%",
                 },
             },
         },
@@ -117,10 +121,14 @@ const ASPECT_RATIO_CONFIG: Config = {
                 left: {
                     flexDirection: "column",
                     aspectRatio: "9/16",
+                    height: "100%",
+                    maxHeight: "100%",
                 },
                 default: {
                     flexDirection: "column-reverse",
                     aspectRatio: "9/16",
+                    height: "100%",
+                    maxHeight: "100%",
                 },
             },
         },

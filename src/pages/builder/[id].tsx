@@ -12,11 +12,13 @@ import Flowchart from "~/components/flowchart/Flowchart";
 import useBuilderStore from "~/store/builder-store";
 import QuestionPreview from "~/components/QuestionPreview";
 import type Question from "~/models/Question";
+import QuestionEditor from "~/components/QuestionEditor";
 
 const FormBuilder: React.FC = ({ id }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const { forms } = useBuilderStore();
     const [questions, setQuestions] = React.useState<Question[]>([]);
     const [activeQuestion, setActiveQuestion] = React.useState<Question | null>(null);
+    const [showEditor, setShowEditor] = React.useState(true);
     const form = forms[id as string];
     const router = useRouter();
     const questionId = router.query.q;
@@ -39,6 +41,7 @@ const FormBuilder: React.FC = ({ id }: InferGetServerSidePropsType<typeof getSer
                 />
             </Sidebar>
             {activeQuestion && <QuestionPreview formId={id as string} question={activeQuestion} />}
+            {activeQuestion && showEditor && <QuestionEditor question={activeQuestion} formId={id as string} />}
             {/* <Flowchart /> */}
             {form?.design?.fontFamily && (
                 <style jsx global>

@@ -27,19 +27,19 @@ const QuestionContent: React.FC<PropsWithChildren<QuestionContentProps>> = ({ qu
     };
 
     return (
-        <div className="flex h-full w-full max-w-max flex-col items-center justify-center gap-4 overflow-auto p-12">
+        <div className="flex h-full max-h-full flex-col items-center justify-center gap-4 overflow-hidden">
             <div className="flex h-full w-full flex-col items-center justify-center gap-2">
                 <input
                     type="text"
                     style={style.text}
-                    className="flex max-w-full items-center justify-center text-center"
+                    className="flex h-full w-full max-w-full truncate text-center"
                     value={question.text}
                     onChange={e => updateQuestion(question.formId, question.id, { text: e.target.value })}
                 />
                 <input
                     type="text"
                     style={style.description}
-                    className="flex max-w-full items-center justify-center p-2 text-center "
+                    className="flex w-full max-w-full  truncate text-center"
                     value={question.description}
                     placeholder="Description (optional)"
                     onChange={e => updateQuestion(question.formId, question.id, { description: e.target.value })}

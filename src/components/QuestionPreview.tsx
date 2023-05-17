@@ -12,13 +12,14 @@ import { type RankingQuestion } from "../models/RankingQuestion";
 import useBuilderStore from "../store/builder-store";
 import { Design } from "~/models/Design";
 import { useStyledElement } from "~/hooks/useStyledElement";
+import Sidebar from "./Sidebar";
+import FocalPoint from "./FocalPointPicker";
 
 interface QuestionPreviewProps {
     question: Question;
     formId: string;
 }
 const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) => {
-    const [showEditor, setShowEditor] = React.useState(true);
     const { forms, updateForm } = useBuilderStore();
     const form = forms[formId];
     const [design, setDesign] = React.useState<Design>(form?.design ?? new Design());
@@ -41,6 +42,37 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) =
     const { styles, setAspectRatio } = useStyledElement(question);
 
     const [isImageEditing, setIsImageEditing] = React.useState(false);
+    const [scale, setScale] = useState(1);
+    const elRef = useRef<HTMLDivElement | null>(null);
+    const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+    function doResize() {
+        if (!elRef.current || !wrapperRef.current) return;
+        const elHeight = elRef.current.offsetHeight;
+        const elWidth = elRef.current.offsetWidth;
+
+        const wrapperHeight = wrapperRef.current.offsetHeight;
+        const wrapperWidth = wrapperRef.current.offsetWidth;
+        console.log(wrapperWidth, elWidth, elWidth / wrapperWidth);
+
+        const newScale = Math.min(elWidth / wrapperWidth, elHeight / wrapperHeight) * 1.6;
+
+        setScale(Math.max(0.5, Math.min(1, newScale)));
+    }
+
+    useEffect(() => {
+        doResize();
+
+        function handleResize() {
+            doResize();
+        }
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
     if (!form) return null;
     if (!form.design) {
         updateForm(formId, { design: design });
@@ -49,62 +81,69 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ question, formId }) =
     const progress = 67;
 
     return (
-        <Layout className="flex items-center justify-center overflow-hidden bg-blue-400 px-2">
-            <div className="flex h-full w-full justify-between bg-red-500 ">
-                <div className="flex w-full items-center justify-center bg-green-500 p-2">
+        <Layout className="relative min-w-0 flex-1 overflow-hidden">
+            <div className="relative z-[9999] h-0 w-full">
+                <div className="absolute right-2 top-2 flex flex-col items-center gap-2 p-2 text-2xl text-white ">
+                    <button className="rounded bg-black/30 p-2" onClick={() => setAspectRatio("video")}>
+                        <FaDesktop />
+                    </button>
+                    <button className="rounded bg-black/30 p-2" onClick={() => setAspectRatio("tablet")}>
+                        <FaTablet />
+                    </button>
+                    <button className="rounded bg-black/30 p-2" onClick={() => setAspectRatio("phone")}>
+                        <BsPhoneFill />
+                    </button>
+                </div>
+            </div>
+            <div ref={wrapperRef} className="flex h-full w-full items-center justify-center p-2 py-12 ">
+                <div
+                    style={{ ...styles.form, backgroundColor: design.backgroundColor, transform: `scale(${scale})` }}
+                    className={`relative flex shadow-lg`}
+                >
                     <div
-                        style={{ ...styles.form, backgroundColor: design.backgroundColor }}
-                        className={`relative flex h-56 justify-evenly sm:h-96 md:h-[30rem]`}
+                        style={{
+                            width: `${progress}%`,
+                            backgroundColor: design.buttonColor,
+                            borderRadius: design.borderRadius,
+                        }}
+                        className="absolute left-0 top-0 z-20 h-1 "
+                    ></div>
+                    <div
+                        style={
+                            {
+                                // ...styles.imageContainer,
+                                // objectFit: question.imageFit,
+                                // objectPosition: question.imagePosition,
+                            }
+                        }
+                        className={`${question.imageUrl ? "" : "hidden"} `}
                     >
-                        <div
+                        <Image
+                            className={``}
                             style={{
-                                width: `${progress}%`,
-                                backgroundColor: design.buttonColor,
-                                borderRadius: design.borderRadius,
-                            }}
-                            className="absolute left-0 top-0 z-20 h-1 "
-                        ></div>
-                        <div
-                            style={{
-                                ...styles.imageContainer,
                                 objectFit: question.imageFit,
-                                objectPosition: question.imagePosition,
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
                             }}
-                            className={`${question.imageUrl ? "" : "hidden"} `}
+                            unoptimized
+                            src={question.imageUrl}
+                            alt={question.imageAltText ?? ""}
+                            fill
+                        />
+                    </div>
+                    {!isImageEditing && (
+                        <div
+                            ref={elRef}
+                            style={{ transform: `scale(${scale})` }}
+                            className="z-10 flex w-full max-w-full items-center justify-center overflow-hidden"
                         >
-                            <Image
-                                className={` `}
-                                style={{
-                                    objectFit: question.imageFit,
-                                }}
-                                unoptimized
-                                src={question.imageUrl}
-                                alt={question.imageAltText ?? ""}
-                                fill
-                            />
+                            {questionContent}
                         </div>
-                        {!isImageEditing && (
-                            <div className="z-10 flex h-full max-w-min items-center justify-center">
-                                {questionContent}
-                            </div>
-                        )}
-                        {/* <Button onClick={() => setIsImageEditing(!isImageEditing)}>Edit Image</Button> */}
-                    </div>
+                    )}
                 </div>
-                <div className="relative h-1 w-0 bg-red-500">
-                    <div className="absolute right-2 top-2 flex flex-col items-center gap-2 p-2 text-2xl text-white ">
-                        <button className="rounded bg-black/30 p-2" onClick={() => setAspectRatio("video")}>
-                            <FaDesktop />
-                        </button>
-                        <button className="rounded bg-black/30 p-2" onClick={() => setAspectRatio("tablet")}>
-                            <FaTablet />
-                        </button>
-                        <button className="rounded bg-black/30 p-2" onClick={() => setAspectRatio("phone")}>
-                            <BsPhoneFill />
-                        </button>
-                    </div>
-                </div>
-                {showEditor && <QuestionEditor question={question} formId={formId} />}
             </div>
         </Layout>
     );
